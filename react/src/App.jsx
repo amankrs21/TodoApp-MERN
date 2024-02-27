@@ -8,6 +8,7 @@ import Register from './pages/register/Register'
 import AdminNavbar from './pages/navbar/AdminNavbar'
 import Todos from './pages/todo/Todos';
 import AdminRoute from './components/AdminRoute';
+import LandingPage from './pages/navbar/Landing';
 
 function App() {
 
@@ -16,8 +17,9 @@ function App() {
       <ToastContainer theme="colored" draggable={false} hideProgressBar={true} />
       <Routes>
         <Route path='/' element={<AdminRoute />}>
-          <Route path="/todo" element={<><AdminNavbar /> <Todos /></>} />
+          <Route path="/todo" element={<Todos />} />
         </Route>
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
       </Routes>

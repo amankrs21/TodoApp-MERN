@@ -2,7 +2,7 @@ const cors = require("cors");
 const express = require("express");
 const connect = require("./Config.js");
 const router = require("./Router/Router.js");
-const app  = express();
+const app = express();
 
 app.use(express.json());
 
@@ -10,7 +10,7 @@ connect();
 
 // Middleware to log all the requests
 app.use((req, res, next) => {
-    console.log("Requesting...", req.method, req.ip.slice(7), req.url, Date().slice(0, 24));
+    console.log("Requesting...", req.method, req.ip.slice(7), req.url, [Date().slice(0, 24)]);
     next()
 })
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
 import AuthUser from '../../components/AuthUser';
+import AppAppBar from '../navbar/Header';
 
 const columns = [
     { id: '', label: '#', minWidth: 10 },
@@ -44,6 +45,7 @@ export default function Todos() {
 
     return (
         <Container maxWidth='lg'>
+            <AppAppBar />
             <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                 <TableContainer sx={{ maxHeight: 560 }}>
                     <Table stickyHeader aria-label="sticky table">
