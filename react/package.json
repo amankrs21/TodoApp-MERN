@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@mui/icons-material": "^5.14.16",
+    "@mui/icons-material": "^5.15.11",
     "@mui/material": "^5.14.18",
     "axios": "^1.6.2",
     "jwt-decode": "^4.0.0",
