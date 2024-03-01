@@ -12,6 +12,9 @@ import MenuItem from '@mui/material/MenuItem';
 import Drawer from '@mui/material/Drawer';
 import MenuIcon from '@mui/icons-material/Menu';
 
+import AuthUser from '../../components/AuthUser';
+import Login from '../login/Login';
+
 const logoStyle = {
     width: '140px',
     height: 'auto',
@@ -20,26 +23,32 @@ const logoStyle = {
 
 
 function Header({ mode }) {
-    const pages = ['Home', 'Todos', 'About Us', 'Contact'];
+    const pages = ['Home', 'About Us', 'Contact'];
     const [open, setOpen] = React.useState(false);
+    const [openLogin, setOpenLogin] = React.useState(false);
+    const [isloggedin, setIsloggedin] = React.useState(false);
+
+    const { isValidToken } = AuthUser();
+    const token = localStorage.getItem('token');
+
+    if (token) {
+        pages.splice(1, 0, 'Todo');
+    }
+
 
     const toggleDrawer = (newOpen) => () => {
         setOpen(newOpen);
     };
 
-    const scrollToSection = (sectionId) => {
-        const sectionElement = document.getElementById(sectionId);
-        const offset = 128;
-        if (sectionElement) {
-            const targetScroll = sectionElement.offsetTop - offset;
-            sectionElement.scrollIntoView({ behavior: 'smooth' });
-            window.scrollTo({
-                top: targetScroll,
-                behavior: 'smooth',
-            });
-            setOpen(false);
+    const handleLogin = () => {
+        if (isloggedin) {
+            localStorage.removeItem('token');
+            setIsloggedin(false);
+            window.location.reload();
+        } else {
+            setOpenLogin(!openLogin);
         }
-    };
+    }
 
     return (
         <div>
@@ -101,6 +110,7 @@ function Header({ mode }) {
                                 ))}
                             </Box>
                         </Box>
+                        <Login open={openLogin} handleLogin={handleLogin} />
                         <Box
                             sx={{
                                 display: { xs: 'none', md: 'flex' },
@@ -113,10 +123,10 @@ function Header({ mode }) {
                                 variant="contained"
                                 size="small"
                                 component="a"
-                                href="/material-ui/getting-started/templates/sign-up/"
+                                onClick={handleLogin}
                                 target="_blank"
                             >
-                                Logout
+                                {isloggedin ? 'Logout' : 'Login'}
                             </Button>
                         </Box>
                         <Box sx={{ display: { sm: '', md: 'none' } }}>
@@ -158,11 +168,11 @@ function Header({ mode }) {
                                             color="primary"
                                             variant="contained"
                                             component="a"
-                                            href="/material-ui/getting-started/templates/sign-up/"
                                             target="_blank"
+                                            onClick={handleLogin}
                                             sx={{ width: '100%' }}
                                         >
-                                            Logout
+                                            {isloggedin ? 'Logout' : 'Login'}
                                         </Button>
                                     </MenuItem>
                                 </Box>

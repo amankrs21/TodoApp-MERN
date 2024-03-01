@@ -24,7 +24,7 @@ export default function Register() {
             toast.error("Credentials not matched!!")
         }
         else {
-            await http.post("/auth/register", {name, username, password}).then((res) => {
+            await http.post("/auth/register", { name, username, password }).then((res) => {
                 toast.success(res.data.message);
                 navigate("/login")
             }).catch((err) => {

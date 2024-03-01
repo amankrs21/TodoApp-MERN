@@ -10,9 +10,7 @@ import getLPTheme from "./components/getLPTheme.jsx";
 import ToggleColorMode from "./components/ToggleColorMode.jsx";
 
 import Home from './pages/home/Home'
-import Login from './pages/login/Login'
-import Register from './pages/register/Register'
-import Todos from './pages/todo/Todos';
+// import Todos from './pages/todo/Todos';
 
 
 function App() {
@@ -33,8 +31,6 @@ function App() {
           <Routes>
             <Route path='/' element={<Navigate to='/welcome' />} />
             <Route path="/welcome" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
           </Routes>
         </div>
         <Footer />

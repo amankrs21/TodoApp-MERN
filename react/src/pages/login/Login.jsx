@@ -1,69 +1,143 @@
-import './Login.css'
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Box, Button, Card, Container, TextField } from '@mui/material'
-import { toast } from 'react-toastify'
-import AuthUser from '../../components/AuthUser'
+import * as React from 'react';
+import {
+    Avatar,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    Box,
+    Button,
+    Slide,
+    TextField,
+    Grid,
+    Link,
+    InputAdornment,
+    IconButton,
+} from "@mui/material";
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { toast } from 'react-toastify';
+import { useTheme } from "@mui/material/styles";
+import AuthUser from '../../components/AuthUser';
 
-export default function Login() {
-    const [username, setUsername] = useState("")
-    const [password, setPassword] = useState('')
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 
-    const navigate = useNavigate();
+export default function Login({ open, handleLogin }) {
+    const theme = useTheme();
+    const [showPassword, setShowPassword] = React.useState(false);
 
-    const { http, setToken, isValidToken } = AuthUser();
+    const { http, setToken } = AuthUser();
 
-    if (isValidToken(localStorage.getItem('token'))) {
-        navigate("/todo")
-    }
-
+    // Function to handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await http.post("/auth/login", { username, password }).then((res) => {
-            console.log(res);
-            setToken(res.data.token);
-            toast.success(res.data.message)
-            navigate('/todo');
-        }).catch((err) => {
-            toast.error(err.response.data.message)
-        })
+        const data = new FormData(e.currentTarget);
+        const username = data.get('username');
+        const password = data.get('password');
+        try {
+            await http
+                .post("/auth/login", { username, password })
+                .then((res) => {
+                    setToken(res.data.token);
+                    toast.success("Login Success!");
+                    e.target.reset();
+                    handleLogin();
+                })
+                .catch((err) => {
+                    toast.error(err.response.data.message);
+                });
+        } catch (error) {
+            toast.error(error);
+        }
+    };
+
+    const handleClose = () => {
+        handleLogin();
     }
 
     return (
-        <>
-            <Container className='loginContainer' maxWidth="xl">
-                <Box
-                    component='form'
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        height: '100vh',
-                    }}
-                    onSubmit={handleSubmit}
-                >
-                    <Card className='loginCard'>
-                        <TextField
-                            required
-                            variant='outlined'
-                            label='Username'
-                            type='text'
-                            name='username'
-                            onChange={(e) => setUsername(e.target.value)}
-                        />
-                        <TextField
-                            required
-                            variant='outlined'
-                            label='Password'
-                            type='password'
-                            name='password'
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                        <Button variant='contained' type='submit'>Login</Button>
-                    </Card>
+        <Dialog
+            open={open}
+            TransitionComponent={Transition}
+            keepMounted
+            onClose={handleClose}
+            aria-describedby="alert-dialog-slide-description"
+            PaperProps={{
+                style: {
+                    marginTop: theme.spacing(8),
+                    marginBottom: theme.spacing(8),
+                    width: 400,
+                },
+            }}
+        >
+            <DialogContent
+                sx={{
+                    margin: 3,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                }}
+            >
+                <Avatar sx={{ bgcolor: 'secondary.main' }}>
+                    <LockOutlinedIcon />
+                </Avatar>
+                <DialogTitle>{"Sign in"}</DialogTitle>
+                <Box component="form" onSubmit={handleSubmit} required>
+                    <TextField
+                        required
+                        fullWidth
+                        hiddenLabel
+                        name="username"
+                        variant="outlined"
+                        placeholder="Enter your username*"
+                    />
+                    <TextField
+                        required
+                        fullWidth
+                        hiddenLabel
+                        name="password"
+                        variant="outlined"
+                        placeholder="Enter your password*"
+                        type={showPassword ? "text" : "password"}
+                        sx={{ mt: 3 }}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                                        {showPassword ? (
+                                            <VisibilityIcon />
+                                        ) : (
+                                            <VisibilityOffIcon />
+                                        )}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        sx={{ mt: 4, mb: 3 }}
+                    >
+                        Sign In
+                    </Button>
+                    <Grid container>
+                        <Grid item xs>
+                            <Link href="#" variant="body2">
+                                Forgot password?
+                            </Link>
+                        </Grid>
+                        <Grid item textAlign='end'>
+                            <Link href="#" variant="body2">
+                                Don't have an account?<br />Sign Up
+                            </Link>
+                        </Grid>
+                    </Grid>
                 </Box>
-            </Container>
-        </>
-    )
+            </DialogContent>
+        </Dialog>
+    );
 }
