@@ -13,7 +13,7 @@ const userLogin = async (req, res) => {
                 return res.status(200).json({ message: "User Logged in Successfully", token });
             }
         }
-        return res.status(404).json({ message: "Invalid Credentials!!" });
+        return res.status(401).json({ message: "Invalid Credentials!!" });
     } catch (e) {
         console.log(e);
         return res.status(500).json({ message: "Something went wrong!" });
@@ -22,7 +22,7 @@ const userLogin = async (req, res) => {
 
 const userRegister = async (req, res) => {
     if (await Users.findOne({ username: req.body.username })) {
-        return res.status(409).json({message: "Username Already Exist!!"});
+        return res.status(409).json({ message: "Username Already Exist!!" });
     }
     const user = new Users({
         "username": req.body.username,
@@ -31,7 +31,7 @@ const userRegister = async (req, res) => {
         "role": "user"
     })
     await user.save().then((e) => {
-        return res.status(201).json({message: "User Registerd Successfully!!", e});
+        return res.status(201).json({ message: "User Registerd Successfully!!", e });
     }).catch((e) => {
         console.log(e);
         return res.status(500).json({ message: "Something went wrong!" })
@@ -43,7 +43,7 @@ const getAllUsers = async (req, res) => {
         return res.status(200).json(e);
     }).catch((e) => {
         console.log(e);
-        return res.status(500).json({message: "Something went wrong!!"})
+        return res.status(500).json({ message: "Something went wrong!!" })
     })
 }
 

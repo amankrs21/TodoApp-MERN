@@ -3,22 +3,18 @@ import { Container, Paper, Table, TableBody, TableCell, TableContainer, TableHea
 import AuthUser from '../../components/AuthUser';
 import AppAppBar from '../navbar/Header';
 
-const columns = [
-    { id: '', label: '#', minWidth: 10 },
-    { id: 'title', label: 'title', minWidth: 100 },
-    { id: 'discription', label: 'discription', minWidth: 170 },
-    { id: 'completed', label: 'completed', minWidth: 100 },
-];
-
 function createData(name, code, population, size) {
     const density = population / size;
     return { name, code, population, size, density };
 }
 
 export default function Todos() {
+    const { http } = AuthUser();
+    const [todos, setTodos] = useState([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-    const [todos, setTodos] = useState([]);
+
+    const columns = ['#', 'Title', 'Discription', 'Completed', 'CreatedAt', "Action"];
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -29,18 +25,17 @@ export default function Todos() {
         setPage(0);
     };
 
-    const { http } = AuthUser();
-    const getTodos = async () => {
-        try {
-            const response = await http.get("todo/");
-            console.log(response.data);
-        } catch (error) {
-            console.error("Error fetching todos", error);
-        }
-    }
-
     useEffect(() => {
-        getTodos();
+        const fetchData = async () => {
+            try {
+                const res = await http.get('/todo');
+                setTodos(res.data);
+                console.log(res.data);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchData();
     }, []);
 
     return (
@@ -51,13 +46,9 @@ export default function Todos() {
                     <Table stickyHeader aria-label="sticky table">
                         <TableHead>
                             <TableRow>
-                                {columns.map((column) => (
-                                    <TableCell
-                                        key={column.id}
-                                        align={column.align}
-                                        style={{ minWidth: column.minWidth }}
-                                    >
-                                        {column.label}
+                                {columns.map((column, index) => (
+                                    <TableCell key={index}>
+                                        {column}
                                     </TableCell>
                                 ))}
                             </TableRow>
@@ -65,21 +56,14 @@ export default function Todos() {
                         <TableBody>
                             {todos
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((row, index) => {
+                                .map((todo, index) => {
                                     return (
                                         <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-                                            <TableCell>
-                                                {index + 1}
-                                            </TableCell>
-                                            <TableCell>
-                                                {row.title}
-                                            </TableCell>
-                                            <TableCell>
-                                                {row.discription}
-                                            </TableCell>
-                                            <TableCell>
-                                                {row.completed ? "completed" : "not completed"}
-                                            </TableCell>
+                                            <TableCell>{index + 1}</TableCell>
+                                            <TableCell>{todo.title}</TableCell>
+                                            <TableCell>{todo.discription}</TableCell>
+                                            <TableCell>{todo.completed ? "Yes" : "No"}</TableCell>
+                                            <TableCell>{new Date(todo.createdAt).toLocaleString()}</TableCell>
                                         </TableRow>
                                     );
                                 })}

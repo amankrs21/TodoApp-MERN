@@ -10,12 +10,12 @@ connect();
 
 // Middleware to log all the requests
 app.use((req, res, next) => {
-    console.log("Requesting...", req.method, req.ip.slice(7), req.url, [Date().slice(0, 24)]);
+    console.log("Requesting...", [`(${req.method}) http://${req.ip.slice(7)}${req.url}`], Date().slice(0, 24));
     next()
 })
 
 // setting up cors
-const allowedOrigins = ["http://localhost:5173", "http://192.168.1.37:5173", "http://192.168.1.10:5173"]
+const allowedOrigins = ["http://localhost:5173", "http://192.168.0.163:5173"]
 const corsOptions = {
     origin: allowedOrigins,
     credentials: true,

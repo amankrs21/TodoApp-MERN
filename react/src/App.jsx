@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
+import { BrowserRouter, Routes, Route, Navigate, Router } from "react-router-dom"
 import { ThemeProvider, CssBaseline, createTheme } from "@mui/material";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -10,10 +10,12 @@ import getLPTheme from "./components/getLPTheme.jsx";
 import ToggleColorMode from "./components/ToggleColorMode.jsx";
 
 import Home from './pages/home/Home'
-// import Todos from './pages/todo/Todos';
+import PageNotFound from './components/PageNotFound.jsx';
+import PrivateRoutes from './components/PrivateRoutes.jsx';
+import Todos from './pages/todo/Todos';
 
 
-function App() {
+export default function App() {
   const [mode, setMode] = React.useState('dark');
   const LPtheme = React.useMemo(() => createTheme(getLPTheme(mode)), [mode]);
 
@@ -25,12 +27,17 @@ function App() {
     <ThemeProvider theme={LPtheme}>
       <CssBaseline />
       <BrowserRouter>
-        <ToastContainer theme="colored" draggable={false} hideProgressBar={true} />
+        <ToastContainer theme="colored" draggable={false} hideProgressBar={true} position="bottom-right" />
         <Header mode={mode} />
         <div style={{ marginTop: 100 }}>
           <Routes>
+            <Route path="*" element={<Navigate to="/404" />} />
             <Route path='/' element={<Navigate to='/welcome' />} />
             <Route path="/welcome" element={<Home />} />
+            <Route path="/404" element={<PageNotFound />} />
+            <Route path="/" element={<PrivateRoutes />}>
+              <Route path='/todo' element={<Todos />} />
+            </Route>
           </Routes>
         </div>
         <Footer />
@@ -41,5 +48,3 @@ function App() {
     </ThemeProvider>
   )
 }
-
-export default App

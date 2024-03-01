@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 
 // Create an instance of Axios with default configurations
 const http = axios.create({
-    baseURL: "http://localhost:3000/",
+    // baseURL: "http://localhost:3000/",
+    baseURL: "http://192.168.0.163:3000/",
     headers: {
         "Content-type": "application/json"
     },
@@ -14,6 +15,20 @@ const http = axios.create({
     credentials: "include",
     withCredentials: true,
 });
+
+// Intercept responses to handle unauthorized errors
+http.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    (error) => {
+        if (error.response.status === 403) {
+            localStorage.removeItem("token");
+            window.location = "/";
+        }
+        return Promise.reject(error);
+    }
+);
 
 export default function AuthUser() {
     const navigate = useNavigate();
@@ -24,15 +39,19 @@ export default function AuthUser() {
         const savedToken = localStorage.getItem("token");
         if (savedToken && isValidToken(savedToken)) {
             setToken(savedToken);
+            http.defaults.headers.common.Authorization = `Bearer ${savedToken}`;
         }
-    }, [navigate]);
+        else {
+            localStorage.removeItem("token");
+        }
+    }, []);
 
     const saveToken = (token) => {
         if (isValidToken(token)) {
-            // Save the token to local storage and set it in state
             localStorage.setItem("token", token);
             setToken(token);
-            navigate("/todo");
+            http.defaults.headers.common.Authorization = `Bearer ${token}`;
+            navigate("/");
         }
     };
 
@@ -53,61 +72,9 @@ export default function AuthUser() {
         }
     };
 
-    const isAdmin = (token) => {
-        if (token) {
-            try {
-                const decodedToken = jwtDecode(token);
-                console.log(decodedToken);
-                if (decodedToken.role !== 'admin') {
-                    return false
-                }
-                return true
-            } catch (err) {
-                console.log("Error in Decoding Token", err);
-                return false
-            }
-        }
-    }
-
-    const isUser = (token) => {
-        if (token) {
-            try {
-                const decodedToken = jwtDecode(token);
-                if (decodedToken.role !== 'user') {
-                    return false
-                }
-                return true
-            } catch (err) {
-                console.log("Error in Decoding Token", err);
-                return false
-            }
-        }
-    }
-
-    // Set the Authorization header for all HTTP requests
-    http.defaults.headers.common.Authorization = `Bearer ${token}`;
-
-    const logout = async () => {
-        await http
-            .post("/auth/logout")
-            .then(() => {
-                // Clear CSRF token cookie and remove the token from local storage
-                document.cookie =
-                    "csrftoken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                localStorage.removeItem("token");
-                navigate("/auth/login");
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    };
-
     return {
         setToken: saveToken,
         isValidToken,
-        isAdmin,
-        isUser,
-        logout,
         token,
         http,
     };

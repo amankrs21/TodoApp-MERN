@@ -1,5 +1,6 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
@@ -14,6 +15,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 
 import AuthUser from '../../components/AuthUser';
 import Login from '../login/Login';
+import { toast } from 'react-toastify';
 
 const logoStyle = {
     width: '140px',
@@ -21,33 +23,46 @@ const logoStyle = {
     cursor: 'pointer',
 };
 
-
-function Header({ mode }) {
+export default function Header({ mode }) {
+    const navigate = useNavigate();
     const pages = ['Home', 'About Us', 'Contact'];
     const [open, setOpen] = React.useState(false);
     const [openLogin, setOpenLogin] = React.useState(false);
-    const [isloggedin, setIsloggedin] = React.useState(false);
-
     const { isValidToken } = AuthUser();
+
     const token = localStorage.getItem('token');
-
-    if (token) {
+    if (token && isValidToken(token)) {
         pages.splice(1, 0, 'Todo');
+    } else {
+        pages.slice(1, 1);
     }
-
 
     const toggleDrawer = (newOpen) => () => {
         setOpen(newOpen);
     };
 
     const handleLogin = () => {
-        if (isloggedin) {
+        if (token && isValidToken(token)) {
             localStorage.removeItem('token');
-            setIsloggedin(false);
-            window.location.reload();
+            navigate('/');
+            toast.success('Logout Success!');
+            setOpen(false);
         } else {
             setOpenLogin(!openLogin);
         }
+    }
+
+    const handlePage = (page) => {
+        if (page === 'Home') {
+            navigate('/');
+        } else if (page === 'About Us') {
+            navigate('/about');
+        } else if (page === 'Contact') {
+            navigate('/contact');
+        } else if (page === 'Todo') {
+            navigate('/todo');
+        }
+        setOpen(false);
     }
 
     return (
@@ -94,15 +109,13 @@ function Header({ mode }) {
                             }}
                         >
                             <img
-                                src={
-                                    'https://assets-global.website-files.com/61ed56ae9da9fd7e0ef0a967/61f12e6faf73568658154dae_SitemarkDefault.svg'
-                                }
+                                src={'https://assets-global.website-files.com/61ed56ae9da9fd7e0ef0a967/61f12e6faf73568658154dae_SitemarkDefault.svg'}
                                 style={logoStyle}
                                 alt="logo of sitemark"
                             />
                             <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                                 {pages.map((page) => (
-                                    <MenuItem key={page} sx={{ py: '6px', px: '12px' }}>
+                                    <MenuItem key={page} sx={{ py: '6px', px: '12px' }} onClick={() => handlePage(page)}>
                                         <Typography variant="body2" color="text.primary">
                                             {page}
                                         </Typography>
@@ -126,7 +139,7 @@ function Header({ mode }) {
                                 onClick={handleLogin}
                                 target="_blank"
                             >
-                                {isloggedin ? 'Logout' : 'Login'}
+                                {token && isValidToken(token) ? 'Logout' : 'Login'}
                             </Button>
                         </Box>
                         <Box sx={{ display: { sm: '', md: 'none' } }}>
@@ -158,7 +171,7 @@ function Header({ mode }) {
                                     >
                                     </Box>
                                     {pages.map((page) => (
-                                        <MenuItem key={page}>
+                                        <MenuItem key={page} onClick={() => handlePage(page)}>
                                             {page}
                                         </MenuItem>
                                     ))}
@@ -172,7 +185,7 @@ function Header({ mode }) {
                                             onClick={handleLogin}
                                             sx={{ width: '100%' }}
                                         >
-                                            {isloggedin ? 'Logout' : 'Login'}
+                                            {token && isValidToken(token) ? 'Logout' : 'Login'}
                                         </Button>
                                     </MenuItem>
                                 </Box>
@@ -187,7 +200,4 @@ function Header({ mode }) {
 
 Header.propTypes = {
     mode: PropTypes.oneOf(['dark', 'light']).isRequired,
-    toggleColorMode: PropTypes.func.isRequired,
 };
-
-export default Header;
