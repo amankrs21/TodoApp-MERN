@@ -28,13 +28,14 @@ export default function Header({ mode }) {
     const pages = ['Home', 'About Us', 'Contact'];
     const [open, setOpen] = React.useState(false);
     const [openLogin, setOpenLogin] = React.useState(false);
-    const { isValidToken } = AuthUser();
+    const { isLoggedIn, isAdmin } = AuthUser();
 
     const token = localStorage.getItem('token');
-    if (token && isValidToken(token)) {
+    if (token && isLoggedIn(token) && isAdmin(token)) {
         pages.splice(1, 0, 'Todo');
-    } else {
-        pages.slice(1, 1);
+        pages.splice(2, 0, 'Users');
+    } else if (token && isLoggedIn(token)) {
+        pages.splice(1, 0, 'Todo');
     }
 
     const toggleDrawer = (newOpen) => () => {
@@ -42,7 +43,7 @@ export default function Header({ mode }) {
     };
 
     const handleLogin = () => {
-        if (token && isValidToken(token)) {
+        if (token && isLoggedIn(token)) {
             localStorage.removeItem('token');
             navigate('/');
             toast.success('Logout Success!');
@@ -139,7 +140,7 @@ export default function Header({ mode }) {
                                 onClick={handleLogin}
                                 target="_blank"
                             >
-                                {token && isValidToken(token) ? 'Logout' : 'Login'}
+                                {token && isLoggedIn(token) ? 'Logout' : 'Login'}
                             </Button>
                         </Box>
                         <Box sx={{ display: { sm: '', md: 'none' } }}>
@@ -185,7 +186,7 @@ export default function Header({ mode }) {
                                             onClick={handleLogin}
                                             sx={{ width: '100%' }}
                                         >
-                                            {token && isValidToken(token) ? 'Logout' : 'Login'}
+                                            {token && isLoggedIn(token) ? 'Logout' : 'Login'}
                                         </Button>
                                     </MenuItem>
                                 </Box>

@@ -1,20 +1,22 @@
 import React from 'react';
 import { Container, Typography, Button, Box, List, ListItem, ListItemText } from '@mui/material';
 
+import AuthUser from '../../components/AuthUser';
+
 export default function Home() {
-    const [loggedIn, setLoggedIn] = React.useState(false);
+    const { isLoggedIn } = AuthUser();
+    const token = localStorage.getItem('token');
 
     return (
         <Container maxWidth='lg'>
             <Typography variant='h3' align='center' gutterBottom>
                 Welcome to the MERN Todo's Application
             </Typography>
-            {loggedIn ? (
+            {token && isLoggedIn(token) ? (
                 <Box>
                     <Typography variant='body1' gutterBottom>
                         Thank you for logging in! Your todos are saved securely and are accessible from anywhere. Get started by adding your first todo item, and enjoy the full functionality of our MERN stack Todo application. Your progress is automatically saved as you go.
                     </Typography>
-                    {/* Add more user-specific content or features here */}
                 </Box>
             ) : (
                 <Box>

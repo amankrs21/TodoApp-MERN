@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, Router } from "react-router-dom"
 import { ThemeProvider, CssBaseline, createTheme } from "@mui/material";
 import { ToastContainer } from 'react-toastify';
@@ -13,7 +13,8 @@ import Home from './pages/home/Home'
 import PageNotFound from './components/PageNotFound.jsx';
 import PrivateRoutes from './components/PrivateRoutes.jsx';
 import Todos from './pages/todo/Todos';
-
+import AboutUs from './pages/about/AboutUs.jsx';
+import ContactUs from './pages/contact/ContactUs.jsx';
 
 export default function App() {
   const [mode, setMode] = React.useState('dark');
@@ -34,6 +35,8 @@ export default function App() {
             <Route path="*" element={<Navigate to="/404" />} />
             <Route path='/' element={<Navigate to='/welcome' />} />
             <Route path="/welcome" element={<Home />} />
+            <Route path='/about' element={<AboutUs />} />
+            <Route path='/contact' element={<ContactUs />} />
             <Route path="/404" element={<PageNotFound />} />
             <Route path="/" element={<PrivateRoutes />}>
               <Route path='/todo' element={<Todos />} />
@@ -42,7 +45,7 @@ export default function App() {
         </div>
         <Footer />
       </BrowserRouter>
-      <div style={{ position: "fixed", bottom: "20px", right: "20px", zIndex: "999" }}>
+      <div className='theme-mode' style={{ position: "fixed", bottom: "20px", right: "20px", zIndex: "999" }}>
         <ToggleColorMode style={{ backgroundColor: "transparent", border: "none", color: "white" }} mode={mode} toggleColorMode={toggleColorMode} />
       </div>
     </ThemeProvider>

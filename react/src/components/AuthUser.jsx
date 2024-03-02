@@ -72,9 +72,22 @@ export default function AuthUser() {
         }
     };
 
+    const isLoggedIn = (token) => {
+        return token && isValidToken(token);
+    };
+
+    const isAdmin = (token) => {
+        if (isLoggedIn(token)) {
+            const decodedToken = jwtDecode(token);
+            return decodedToken.role === "admin";
+        }
+    };
+
     return {
         setToken: saveToken,
         isValidToken,
+        isLoggedIn,
+        isAdmin,
         token,
         http,
     };
