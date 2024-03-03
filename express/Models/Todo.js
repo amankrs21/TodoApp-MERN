@@ -5,11 +5,10 @@ const TodoSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
-        unique: true,
     },
-    discription: {
+    description: {
         type: String,
-        required: false,
+        required: true,
         trim: true,
     },
     completed: {
@@ -22,7 +21,8 @@ const TodoSchema = new mongoose.Schema({
     },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'User',
+        required: true
     }
 });
 

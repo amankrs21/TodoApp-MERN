@@ -1,8 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken")
 const Users = require('../Models/Users.js');
-
-const SecretKey = "a2f4c7e8b4a9d6f0e5b1c8a3f7e78cme6a1c7e9f4b5c1a8e3f7d4b9c1a8f3";
+const SecretKey = process.env.SECRET_KEY;
 
 const userLogin = async (req, res) => {
     try {

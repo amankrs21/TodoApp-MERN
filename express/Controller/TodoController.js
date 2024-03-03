@@ -1,4 +1,6 @@
 const TodoSchema = require("../Models/Todo.js");
+const { currentUserID } = require("../Middleware/AuthUser.js");
+
 
 const getTodos = async (req, res) => {
     // get all todos
@@ -10,19 +12,20 @@ const getTodos = async (req, res) => {
 }
 
 const addTodo = async (req, res) => {
-    // if (TodoSchema.findOne({title: req.body.title}))
-    //     return res.status(409).json({message: "Todo Already Exist"})
-    const todo = new TodoSchema({
-        "title": req.body.title,
-        "discription": req.body.discription,
-        "completed": req.body.completed
-    });
-    await todo.save().then((e) => {
-        return res.status(201).json(e);
-    }).catch((e) => {
-        console.log(e);
-        return res.status(500).json({message: "Something went wrong"});
-    });
+    try {
+        const userID = await currentUserID(req, res);
+        console.log(req.body, userID);
+        const todo = new TodoSchema({
+            title: req.body.title,
+            description: req.body.description,
+            createdBy: userID
+        });
+        await todo.save();
+        return res.status(201).json(todo);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Something went wrong" });
+    }
 }
 
 const markComplete = async (req, res) => {
@@ -45,7 +48,7 @@ const updateTodo = async (req, res) => {
         if (!todo)
             return res.status(404).json({ message: 'Todo Not Found' });
 
-        todo.discription = req.body.discription;
+        todo.description = req.body.description;
         const updatedTodo = await todo.save();
 
         return res.status(200).json(updatedTodo);

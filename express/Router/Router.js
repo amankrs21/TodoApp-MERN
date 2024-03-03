@@ -1,17 +1,16 @@
 const express = require("express");
-const VerifyUser = require("../Middleware/VerifyUser.js");
-const VerifyAdmin = require("../Middleware/VerifyAdmin.js");
+const { verifyUser, verifyAdmin } = require("../Middleware/AuthUser.js");
 const { userLogin, userRegister, getAllUsers } = require("../Controller/UserController.js")
-const { getTodos, addTodo, markComplete, updateTodo, deleteTodo } = require("../Controller/Controller.js");
+const { getTodos, addTodo, markComplete, updateTodo, deleteTodo } = require("../Controller/TodoController.js");
 const router = express.Router();
 
 router.post('/auth/login', userLogin)
 router.post('/auth/register', userRegister)
-router.get('/admin/users', VerifyUser, VerifyAdmin, getAllUsers)
-router.get('/todo', getTodos);
+router.get('/admin/users', verifyUser, verifyAdmin, getAllUsers)
+router.get('/todo', verifyUser, getTodos);
 router.post('/todo/add', addTodo);
-router.patch('/todo/complete/:id', markComplete);
-router.patch('/todo/update', updateTodo)
-router.delete('/todo/delete/:id', deleteTodo)
+router.patch('/todo/complete/:id', verifyUser, markComplete);
+router.patch('/todo/update', verifyUser, updateTodo)
+router.delete('/todo/delete/:id', verifyUser, deleteTodo)
 
 module.exports = router;

@@ -25,17 +25,11 @@ export default function AddTodo({ open, handleOpen }) {
         const title = data.get('title');
         const description = data.get('description');
         try {
-            await http
-                .post("/todo/add", { title, description })
-                .then((res) => {
-                    setToken(res.data.token);
-                    toast.success("Todo Added Successfully!");
-                    e.target.reset();
-                    handleOpen();
-                })
-                .catch((err) => {
-                    toast.error(err.response.data.message);
-                });
+            const response = await http.post('/todo/add', { title, description });
+            if (response.status === 201) {
+                toast.success("Todo added successfully");
+                handleOpen();
+            }
         } catch (error) {
             toast.error(error);
         }

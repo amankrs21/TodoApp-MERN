@@ -24,7 +24,7 @@ export default function Todos() {
     const [todos, setTodos] = useState([]);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
-    const columns = ['#', 'Title', 'Discription', 'Completed', 'CreatedAt', "Action"];
+    const columns = ['#', 'Title', 'description', 'Completed', 'CreatedAt', "Action"];
 
     const handleOpen = () => {
         setOpen(!open);
@@ -85,7 +85,7 @@ export default function Todos() {
                                         <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                                             <TableCell>{index + 1}</TableCell>
                                             <TableCell>{todo.title}</TableCell>
-                                            <TableCell>{todo.discription}</TableCell>
+                                            <TableCell>{todo.description}</TableCell>
                                             <TableCell>{todo.completed ? "Yes" : "No"}</TableCell>
                                             <TableCell>{new Date(todo.createdAt).toLocaleString()}</TableCell>
                                         </TableRow>

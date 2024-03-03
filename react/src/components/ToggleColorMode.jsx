@@ -19,10 +19,16 @@ function ToggleColorMode({ mode, toggleColorMode }) {
                 onClick={toggleColorMode}
                 size="small"
                 aria-label="button to toggle theme"
-                sx={{ minWidth: '32px', height: '32px', p: '4px', mr: 1 }}
+                sx={{
+                    minWidth: '32px',
+                    height: '32px',
+                    p: '4px',
+                    mr: 1,
+                    opacity: isHovered ? 1 : 0.7,
+                }}
             >
                 {mode === 'dark' ? <WbSunnyRoundedIcon fontSize="small" /> : <ModeNightRoundedIcon fontSize="small" />}
-                &nbsp;{isHovered && <span>{mode === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>} {/* Show text based on mode */}
+                &nbsp;{isHovered && <span>{mode === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>}
             </Button>
         </Box>
     );
