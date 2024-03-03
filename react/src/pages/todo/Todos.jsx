@@ -52,7 +52,7 @@ export default function Todos() {
             };
             fetchData();
         }
-    }, []);
+    }, [open]);
 
     return (
         <Container maxWidth='lg'>
