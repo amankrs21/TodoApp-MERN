@@ -15,6 +15,7 @@ import PrivateRoutes from './components/PrivateRoutes.jsx';
 import Todos from './pages/todo/Todos';
 import AboutUs from './pages/about/AboutUs.jsx';
 import ContactUs from './pages/contact/ContactUs.jsx';
+import Users from './pages/users/Users.jsx';
 
 export default function App() {
   const [mode, setMode] = React.useState('dark');
@@ -40,6 +41,7 @@ export default function App() {
             <Route path="/404" element={<PageNotFound />} />
             <Route path="/" element={<PrivateRoutes />}>
               <Route path='/todo' element={<Todos />} />
+              <Route path='/users' element={<Users />} />
             </Route>
           </Routes>
         </div>

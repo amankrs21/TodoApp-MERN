@@ -62,6 +62,8 @@ export default function Header({ mode }) {
             navigate('/contact');
         } else if (page === 'Todo') {
             navigate('/todo');
+        } else if (page === 'Users') {
+            navigate('/users');
         }
         setOpen(false);
     }
