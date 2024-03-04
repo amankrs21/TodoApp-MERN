@@ -11,14 +11,20 @@ const verifyUser = async (req, res, next) => {
             return res.status(401).json({ message: "Token is not provided or invalid" });
         }
 
-        const decoded = await jwt.verify(token, SecretKey);
-        const user = await Users.findById(decoded?.id);
-
-        if (!user || !['user', 'admin'].includes(user.role)) {
-            return res.status(401).json({ message: "Unauthorized" });
+        // Verify the token and handle TokenExpiredError
+        try {
+            const decoded = jwt.verify(token, SecretKey);
+            const user = await Users.findById(decoded?.id);
+            if (!user || !['user', 'admin'].includes(user.role)) {
+                return res.status(401).json({ message: "Unauthorized" });
+            }
+            next();
+        } catch (error) {
+            if (error.name === 'TokenExpiredError') {
+                return res.status(401).json({ message: "Token has expired" });
+            }
+            throw error; // Rethrow other errors
         }
-
-        next();
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: "Internal Server Error" });

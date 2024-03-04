@@ -1,48 +1,55 @@
-import React from 'react';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import Slide from '@mui/material/Slide';
-import TextField from '@mui/material/TextField';
-import { toast } from 'react-toastify';
-import { useTheme } from "@mui/material/styles";
+import React, { useState, useEffect } from 'react';
+import { Button, Dialog, DialogContent, DialogTitle, Slide, TextField } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import AuthUser from '../../components/AuthUser';
+import { toast } from 'react-toastify';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function AddTodo({ openAdd, handleAddOpen }) {
+export default function UpdateTodo({ openUpdate, handleUpdateOpen, todoId }) {
     const theme = useTheme();
     const { http } = AuthUser();
+    const [todo, setTodo] = useState({ id: todoId, title: '', description: '' });
 
-    // Function to handle form submission
+    useEffect(() => {
+        const fetchTodo = async () => {
+            try {
+                const response = await http.get(`/todo/${todoId}`);
+                setTodo(response.data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+        fetchTodo();
+    }, [openUpdate]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const data = new FormData(e.currentTarget);
-        const title = data.get('title');
-        const description = data.get('description');
         try {
-            const response = await http.post('/todo/add', { title, description });
-            if (response.status === 201) {
-                toast.success("Todo added successfully");
-                handleAddOpen();
-                e.target.reset();
-            }
+            await http.patch(`/todo/update`, todo);
+            toast.success('Todo Updated Successfully!')
+            handleUpdateOpen();
         } catch (error) {
-            toast.error(error);
+            console.error(error);
         }
     };
 
+    const handleChange = (e) => {
+        setTodo({
+            ...todo,
+            [e.target.name]: e.target.value
+        });
+    };
+
     const handleClose = () => {
-        handleAddOpen();
-    }
+        handleUpdateOpen();
+    };
 
     return (
         <Dialog
-            open={openAdd}
+            open={openUpdate}
             TransitionComponent={Transition}
             keepMounted
             onClose={handleClose}
@@ -63,15 +70,17 @@ export default function AddTodo({ openAdd, handleAddOpen }) {
                     alignItems: 'center',
                 }}
             >
-                <DialogTitle>{"Add a new Todo!"}</DialogTitle>
-                <Box component="form" onSubmit={handleSubmit} required>
+                <DialogTitle>{"Update Todo!"}</DialogTitle>
+                <form onSubmit={handleSubmit}>
                     <TextField
                         required
                         fullWidth
                         hiddenLabel
                         name="title"
                         variant="outlined"
-                        placeholder="Enter your Todo Title*"
+                        placeholder="Your Todo Title*"
+                        value={todo.title}
+                        onChange={handleChange}
                     />
                     <TextField
                         sx={{ mt: 3 }}
@@ -82,7 +91,9 @@ export default function AddTodo({ openAdd, handleAddOpen }) {
                         rows={3}
                         name="description"
                         variant="outlined"
-                        placeholder="Enter Todo Description*"
+                        placeholder="Your Todo Description*"
+                        value={todo.description}
+                        onChange={handleChange}
                     />
                     <Button
                         type="submit"
@@ -90,9 +101,9 @@ export default function AddTodo({ openAdd, handleAddOpen }) {
                         variant="contained"
                         sx={{ mt: 4, mb: 3 }}
                     >
-                        Add Todo
+                        Update Todo
                     </Button>
-                </Box>
+                </form>
             </DialogContent>
         </Dialog>
     );

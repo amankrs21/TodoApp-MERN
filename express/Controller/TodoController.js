@@ -3,8 +3,15 @@ const { currentUserID } = require("../Middleware/AuthUser.js");
 
 
 const getTodos = async (req, res) => {
-    // get all todos
     await TodoSchema.find({}).then((e) => {
+        return res.status(200).json(e);
+    }).catch((e) => {
+        return res.status(500).json(e);
+    });
+}
+
+const getTodoById = async (req, res) => {
+    await TodoSchema.findById(req.params.id).then((e) => {
         return res.status(200).json(e);
     }).catch((e) => {
         return res.status(500).json(e);
@@ -44,14 +51,14 @@ const markComplete = async (req, res) => {
 
 const updateTodo = async (req, res) => {
     try {
-        const todo = await TodoSchema.findOne({ title: req.body.title });
+        const todo = await TodoSchema.findById(req.body._id);
         if (!todo)
             return res.status(404).json({ message: 'Todo Not Found' });
-
+        todo.title = req.body.title;
         todo.description = req.body.description;
         const updatedTodo = await todo.save();
 
-        return res.status(200).json(updatedTodo);
+        return res.status(200).json({ message: "Todo Updated Successfully!!", updatedTodo });
     } catch (e) {
         console.log(e);
         return res.status(500).json({ message: "Something went wrong!" });
@@ -71,4 +78,4 @@ const deleteTodo = async (req, res) => {
     }
 }
 
-module.exports = { getTodos, addTodo, markComplete, updateTodo, deleteTodo };
+module.exports = { getTodos, getTodoById, addTodo, markComplete, updateTodo, deleteTodo };

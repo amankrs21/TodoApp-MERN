@@ -13,21 +13,38 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
+import BorderColorIcon from '@mui/icons-material/BorderColor';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
 import AddTodo from './AddTodo';
+import UpdateTodo from './UpdateTodo';
+import DeleteTodo from './DeleteTodo';
 import AuthUser from '../../components/AuthUser';
 
 export default function Todos() {
     const { http, isLoggedIn } = AuthUser();
-    const [open, setOpen] = useState(false);
+    const [openAdd, setAddOpen] = useState(false);
+    const [openUpdate, setUpdateOpen] = useState(false);
+    const [openDelete, setDeleteOpen] = useState(false);
+    const [todoId, setTodoId] = useState(null);
     const [page, setPage] = useState(0);
     const [todos, setTodos] = useState([]);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
     const columns = ['#', 'Title', 'description', 'Completed', 'CreatedAt', "Action"];
 
-    const handleOpen = () => {
-        setOpen(!open);
+    const handleAddOpen = () => {
+        setAddOpen(!openAdd);
+    };
+
+    const handleUpdateOpen = (id) => {
+        setTodoId(id);
+        setUpdateOpen(!openUpdate);
+    };
+
+    const handleDeleteOpen = (id) => {
+        setTodoId(id);
+        setDeleteOpen(!openDelete);
     };
 
     const handleChangePage = (event, newPage) => {
@@ -52,7 +69,7 @@ export default function Todos() {
             };
             fetchData();
         }
-    }, [open]);
+    }, [openAdd, openUpdate, openDelete]);
 
     return (
         <Container maxWidth='lg'>
@@ -60,7 +77,7 @@ export default function Todos() {
                 <Typography variant="h4" component="h2" gutterBottom>
                     Todo's List
                 </Typography>
-                <Button variant="contained" color="primary" onClick={handleOpen}>
+                <Button variant="contained" color="primary" onClick={handleAddOpen}>
                     Add a new Todo
                 </Button>
             </Box>
@@ -88,6 +105,16 @@ export default function Todos() {
                                             <TableCell>{todo.description}</TableCell>
                                             <TableCell>{todo.completed ? "Yes" : "No"}</TableCell>
                                             <TableCell>{new Date(todo.createdAt).toLocaleString()}</TableCell>
+                                            <TableCell>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', width: '80px' }}>
+                                                    <div style={{ cursor: 'pointer' }} onClick={() => handleUpdateOpen(todo._id)}>
+                                                        <BorderColorIcon color="primary" />
+                                                    </div>
+                                                    <div style={{ cursor: 'pointer' }} onClick={() => handleDeleteOpen(todo._id)}>
+                                                        <DeleteForeverIcon color="error" />
+                                                    </div>
+                                                </div>
+                                            </TableCell>
                                         </TableRow>
                                     );
                                 })}
@@ -104,7 +131,9 @@ export default function Todos() {
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </Paper>
-            <AddTodo open={open} handleOpen={handleOpen} />
+            {openAdd && <AddTodo openAdd={openAdd} handleAddOpen={handleAddOpen} />}
+            {openUpdate && <UpdateTodo openUpdate={openUpdate} handleUpdateOpen={handleUpdateOpen} todoId={todoId} />}
+            {openDelete && <DeleteTodo openDelete={openDelete} handleDeleteOpen={handleDeleteOpen} todoId={todoId} />}
         </Container>
     );
 }

@@ -26,6 +26,10 @@ http.interceptors.response.use(
             localStorage.removeItem("token");
             window.location = "/";
         }
+        if (localStorage.getItem("token") && error.response.status === 401) {
+            localStorage.removeItem("token");
+            window.location = "/";
+        }
         return Promise.reject(error);
     }
 );
