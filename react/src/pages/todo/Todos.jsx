@@ -20,6 +20,7 @@ import AddTodo from './AddTodo';
 import UpdateTodo from './UpdateTodo';
 import DeleteTodo from './DeleteTodo';
 import AuthUser from '../../components/AuthUser';
+import { IconButton, Tooltip } from '@mui/material';
 
 export default function Todos() {
     const { http, isLoggedIn } = AuthUser();
@@ -108,10 +109,26 @@ export default function Todos() {
                                             <TableCell>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', width: '80px' }}>
                                                     <div style={{ cursor: 'pointer' }} onClick={() => handleUpdateOpen(todo._id)}>
-                                                        <BorderColorIcon color="primary" />
+                                                        <Tooltip title="Update Todo">
+                                                            <IconButton
+                                                                color="inherit"
+                                                                aria-label="Update Todo"
+                                                                sx={{ alignSelf: 'center' }}
+                                                            >
+                                                                <BorderColorIcon color="primary" />
+                                                            </IconButton>
+                                                        </Tooltip>
                                                     </div>
                                                     <div style={{ cursor: 'pointer' }} onClick={() => handleDeleteOpen(todo._id)}>
-                                                        <DeleteForeverIcon color="error" />
+                                                        <Tooltip title="Delete Todo">
+                                                            <IconButton
+                                                                color="inherit"
+                                                                aria-label="Delete Todo"
+                                                                sx={{ alignSelf: 'center' }}
+                                                            >
+                                                                <DeleteForeverIcon color="error" />
+                                                            </IconButton>
+                                                        </Tooltip>
                                                     </div>
                                                 </div>
                                             </TableCell>

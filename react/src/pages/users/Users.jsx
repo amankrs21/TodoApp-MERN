@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Typography, Box, Divider, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
+import { Container, Typography, Box, Divider, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, IconButton, Tooltip } from '@mui/material';
 import LockResetIcon from '@mui/icons-material/LockReset';
 import { Navigate } from 'react-router-dom';
 import AuthUser from '../../components/AuthUser'
@@ -39,7 +39,15 @@ export default function Users() {
                                     <TableCell>True</TableCell>
                                     <TableCell>
                                         <div style={{ cursor: 'pointer' }}>
-                                            <LockResetIcon color="info" />
+                                            <Tooltip title="Reset Password">
+                                                <IconButton
+                                                    color="inherit"
+                                                    aria-label="Reset Password"
+                                                    sx={{ alignSelf: 'center' }}
+                                                >
+                                                    <LockResetIcon color='info' />
+                                                </IconButton>
+                                            </Tooltip>
                                         </div>
                                     </TableCell>
                                 </TableRow>

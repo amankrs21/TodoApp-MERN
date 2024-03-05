@@ -1,16 +1,15 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 import FacebookIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import XIcon from '@mui/icons-material/X';
+import { Tooltip } from '@mui/material';
 
 const logoStyle = {
     width: '140px',
@@ -69,30 +68,36 @@ export default function Footer() {
                         color: 'text.secondary',
                     }}
                 >
-                    <IconButton
-                        color="inherit"
-                        href="https://github.com/amankrs21"
-                        aria-label="GitHub"
-                        sx={{ alignSelf: 'center' }}
-                    >
-                        <FacebookIcon />
-                    </IconButton>
-                    <IconButton
-                        color="inherit"
-                        href="https://twitter.com/amankrs21"
-                        aria-label="X"
-                        sx={{ alignSelf: 'center' }}
-                    >
-                        <XIcon />
-                    </IconButton>
-                    <IconButton
-                        color="inherit"
-                        href="https://www.linkedin.com/in/amankrs21"
-                        aria-label="LinkedIn"
-                        sx={{ alignSelf: 'center' }}
-                    >
-                        <LinkedInIcon />
-                    </IconButton>
+                    <Tooltip title="GitHub">
+                        <IconButton
+                            color="inherit"
+                            onClick={() => window.open('https://github.com/amankrs21', '_blank', 'noopener,noreferrer')}
+                            aria-label="GitHub"
+                            sx={{ alignSelf: 'center' }}
+                        >
+                            <FacebookIcon />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Twitter">
+                        <IconButton
+                            color="inherit"
+                            onClick={() => window.open('https://twitter.com/amankrs21', '_blank', 'noopener,noreferrer')}
+                            aria-label="X"
+                            sx={{ alignSelf: 'center' }}
+                        >
+                            <XIcon />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="LinkedIn">
+                        <IconButton
+                            color="inherit"
+                            onClick={() => window.open('https://www.linkedin.com/in/amankrs21', '_blank', 'noopener,noreferrer')}
+                            aria-label="LinkedIn"
+                            sx={{ alignSelf: 'center' }}
+                        >
+                            <LinkedInIcon />
+                        </IconButton>
+                    </Tooltip>
                 </Stack>
             </Box>
         </Container>
