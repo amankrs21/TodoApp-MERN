@@ -1,11 +1,12 @@
 const express = require("express");
 const { verifyUser, verifyAdmin } = require("../Middleware/AuthUser.js");
-const { userLogin, userRegister, getAllUsers } = require("../Controller/UserController.js")
+const { userLogin, userRegister, getAllUsers, resetPassword } = require("../Controller/UserController.js")
 const { getTodos, getTodoById, addTodo, markComplete, updateTodo, deleteTodo } = require("../Controller/TodoController.js");
 const router = express.Router();
 
 router.post('/auth/login', userLogin)
 router.post('/auth/register', userRegister)
+router.patch('/auth/reset', verifyUser, resetPassword)
 router.get('/admin/users', verifyUser, verifyAdmin, getAllUsers)
 router.get('/todo', verifyUser, getTodos);
 router.get('/todo/:id', verifyUser, getTodoById);

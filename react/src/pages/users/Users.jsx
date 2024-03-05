@@ -3,11 +3,19 @@ import { Container, Typography, Box, Divider, TableContainer, Paper, Table, Tabl
 import LockResetIcon from '@mui/icons-material/LockReset';
 import { Navigate } from 'react-router-dom';
 import AuthUser from '../../components/AuthUser'
+import ResetPass from './ResetPass';
 
 export default function Users() {
     const { http, isAdmin } = AuthUser();
-    const [users, setUsers] = React.useState([]);
     const token = localStorage.getItem("token");
+    const [users, setUsers] = React.useState([]);
+    const [userId, setUserId] = React.useState(null);
+    const [openReset, setResetOpen] = React.useState(false);
+
+    const handleResetOpen = (id) => {
+        setUserId(id);
+        setResetOpen(!openReset);
+    }
 
     React.useEffect(() => {
         if (token && isAdmin(token)) {
@@ -52,9 +60,9 @@ export default function Users() {
                                         <TableCell>{user.name}</TableCell>
                                         <TableCell>{user.isActive.toString()}</TableCell>
                                         <TableCell>{new Date(user.createdAt).toLocaleString()}</TableCell>
-                                        <TableCell>{new Date(user.lastLogin).toLocaleString()}</TableCell>
+                                        <TableCell>{user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'New User'}</TableCell>
                                         <TableCell>
-                                            <div style={{ cursor: 'pointer' }}>
+                                            <div style={{ cursor: 'pointer' }} onClick={() => handleResetOpen(user._id)}>
                                                 <Tooltip title="Reset Password">
                                                     <IconButton
                                                         color="inherit"
@@ -71,6 +79,7 @@ export default function Users() {
                             </TableBody>
                         </Table>
                     </TableContainer>
+                    {openReset && <ResetPass openReset={openReset} handleResetOpen={handleResetOpen} userId={userId} />}
                 </Container>
             ) : (
                 <Navigate to='/404' />

@@ -49,4 +49,15 @@ const getAllUsers = async (req, res) => {
     })
 }
 
-module.exports = { userLogin, userRegister, getAllUsers }
+const resetPassword = async (req, res) => {
+    const user = await Users.findById(req.body.id);
+    user.password = await bcrypt.hash(user.username, 10);
+    await user.save().then((e) => {
+        return res.status(200).json({ message: "Password Reset Successfully!!" });
+    }).catch((e) => {
+        console.log(e);
+        return res.status(500).json({ message: "Something went wrong!!" });
+    })
+}
+
+module.exports = { userLogin, userRegister, getAllUsers, resetPassword }

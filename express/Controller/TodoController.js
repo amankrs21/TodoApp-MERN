@@ -3,7 +3,8 @@ const { currentUserID } = require("../Middleware/AuthUser.js");
 
 
 const getTodos = async (req, res) => {
-    await TodoSchema.find({}).then((e) => {
+    const userID = await currentUserID(req, res);
+    await TodoSchema.find({ createdBy: userID }).then((e) => {
         return res.status(200).json(e);
     }).catch((e) => {
         return res.status(500).json(e);
@@ -21,7 +22,6 @@ const getTodoById = async (req, res) => {
 const addTodo = async (req, res) => {
     try {
         const userID = await currentUserID(req, res);
-        console.log(req.body, userID);
         const todo = new TodoSchema({
             title: req.body.title,
             description: req.body.description,
