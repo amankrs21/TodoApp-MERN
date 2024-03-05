@@ -9,6 +9,8 @@ const userLogin = async (req, res) => {
         if (user) {
             if (await bcrypt.compare(req.body.password, user.password)) {
                 const token = jwt.sign({ id: user._id, role: user.role }, SecretKey, { expiresIn: '30m' });
+                user.lastLogin = Date.now();
+                await user.save();
                 return res.status(200).json({ message: "User Logged in Successfully", token });
             }
         }
@@ -27,7 +29,8 @@ const userRegister = async (req, res) => {
         "username": req.body.username,
         "password": await bcrypt.hash(req.body.password, 10),
         "name": req.body.name,
-        "role": "user"
+        "role": "user",
+        "isActive": true,
     })
     await user.save().then((e) => {
         return res.status(201).json({ message: "User Registerd Successfully!!", e });

@@ -17,7 +17,19 @@ const Users = new mongoose.Schema({
         type: String,
         enum: ['user', 'admin'],
         required: true,
-    }
+    },
+    isActive: {
+        type: Boolean,
+        default: true,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+    lastLogin: {
+        type: Date,
+        required: false,
+    },
 });
 
 module.exports = mongoose.model('Users', Users);
