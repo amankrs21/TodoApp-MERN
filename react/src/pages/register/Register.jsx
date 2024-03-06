@@ -13,7 +13,7 @@ import {
     InputAdornment,
     IconButton,
 } from "@mui/material";
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { toast } from 'react-toastify';
@@ -82,7 +82,7 @@ export default function Register({ open, handleRegister }) {
                 }}
             >
                 <Avatar sx={{ bgcolor: 'secondary.main' }}>
-                    <LockOutlinedIcon />
+                    <AssignmentIcon />
                 </Avatar>
                 <DialogTitle>{"Register here..."}</DialogTitle>
                 <Box component="form" onSubmit={handleSubmit} required>

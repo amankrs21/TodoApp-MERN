@@ -18,11 +18,14 @@ import ContactUs from './pages/contact/ContactUs.jsx';
 import Users from './pages/users/Users.jsx';
 
 export default function App() {
-  const [mode, setMode] = React.useState('dark');
+  const localMode = localStorage.getItem('mode');
+  const [mode, setMode] = React.useState(localMode ? localMode : 'dark');
   const LPtheme = React.useMemo(() => createTheme(getLPTheme(mode)), [mode]);
 
   const toggleColorMode = () => {
-    setMode((prev) => (prev === 'dark' ? 'light' : 'dark'));
+    const newMode = mode === 'dark' ? 'light' : 'dark';
+    setMode(newMode);
+    localStorage.setItem('mode', newMode);
   };
 
   return (
