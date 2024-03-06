@@ -7,6 +7,7 @@ import {
 import { toast } from 'react-toastify';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import AddTodo from './AddTodo';
 import UpdateTodo from './UpdateTodo';
 import DeleteTodo from './DeleteTodo';
@@ -23,8 +24,6 @@ export default function Todos() {
     const [openUpdate, setUpdateOpen] = useState(false);
     const [openDelete, setDeleteOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-
-    const columns = ['#', 'Title', 'Description', 'Completed', 'CreatedAt', 'Actions'];
 
     const handleChangePage = useCallback((event, newPage) => {
         setPage(newPage);
@@ -122,11 +121,12 @@ export default function Todos() {
                         <Table stickyHeader aria-label="sticky table">
                             <TableHead>
                                 <TableRow>
-                                    {columns.map((column, index) => (
-                                        <TableCell key={index}>
-                                            {column}
-                                        </TableCell>
-                                    ))}
+                                    <TableCell>#</TableCell>
+                                    <TableCell>Title</TableCell>
+                                    <TableCell>Description</TableCell>
+                                    <TableCell>Completed</TableCell>
+                                    <TableCell>CreatedAt <KeyboardArrowDownIcon /></TableCell>
+                                    <TableCell>Actions</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -137,7 +137,16 @@ export default function Todos() {
                                             <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                                                 <TableCell>{index + 1}</TableCell>
                                                 <TableCell>{todo.title}</TableCell>
-                                                <TableCell>{todo.description}</TableCell>
+                                                <TableCell>
+                                                    <pre style={{
+                                                        minWidth: '20rem',
+                                                        whiteSpace: 'pre-wrap',
+                                                        wordBreak: 'break-word',
+                                                        overflowWrap: 'break-word'
+                                                    }}>
+                                                        {todo.description}
+                                                    </pre>
+                                                </TableCell>
                                                 <TableCell>
                                                     <Switch
                                                         color="success"
