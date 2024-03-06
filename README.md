@@ -4,11 +4,15 @@ The TodoMERN project leverages the power of the MERN stack (MongoDB, Express, Re
 
 ## Features
 
-- **MERN Stack**: Utilizes MongoDB, Express.js, React.js, and Node.js for a full-stack JavaScript solution.
-- **JWT Authentication**: Implements JSON Web Tokens for secure authentication and session management.
-- **Protected Routes**: Ensures that some routes are only accessible to authenticated users, protecting sensitive information and functionalities.
-- **CRUD Operations**: Users can create, read, update, and delete todos, providing a complete management system.
-- **Responsive Design**: The frontend is designed to be responsive, offering a seamless experience on both desktop and mobile devices.
+- **MERN Stack**: Leverages MongoDB, Express.js, React.js, and Node.js for a robust full-stack JavaScript solution.
+- **JWT Authentication**: Implements JSON Web Tokens to manage user sessions securely.
+- **Protected Routes**: Restricts access to certain functionalities to authenticated users only.
+- **Admin Capabilities**: Admin users can manage user accounts and reset passwords, providing an extra layer of management and security.
+- **Dark and Light Mode**: Users can toggle between dark and light themes for a personalized UI experience.
+- **Material UI (MUI)**: Utilizes MUI for an attractive and responsive user interface, enhancing usability and accessibility.
+- **Responsive Design**: The UI adapts to various screen sizes, ensuring a seamless experience on desktops, tablets, and smartphones.
+- **Toaster Notifications**: Incorporates toast notifications for real-time feedback on user actions, such as creating, updating, or deleting todos.
+
 
 
 ## Technologies Used
