@@ -14,7 +14,6 @@ The TodoMERN project leverages the power of the MERN stack (MongoDB, Express, Re
 - **Toaster Notifications**: Incorporates toast notifications for real-time feedback on user actions, such as creating, updating, or deleting todos.
 
 
-
 ## Technologies Used
 
 - **Frontend**: React.js, React Router, Axios, Material UI, Vite.js
