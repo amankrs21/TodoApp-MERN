@@ -1,99 +1,146 @@
-import React, { useState } from 'react'
-import { Button, Card, Container, TextField } from '@mui/material'
-import { useNavigate } from 'react-router-dom';
-import AuthUser from '../../components/AuthUser';
+import * as React from 'react';
+import {
+    Avatar,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    Box,
+    Button,
+    Slide,
+    TextField,
+    Grid,
+    Link,
+    InputAdornment,
+    IconButton,
+} from "@mui/material";
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { toast } from 'react-toastify';
+import { useTheme } from "@mui/material/styles";
+import AuthUser from '../../components/AuthUser';
 
-export default function Register() {
-    const [name, setName] = useState("");
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [cpassword, setCPassword] = useState("");
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 
-    const navigate = useNavigate();
+export default function Register({ open, handleRegister }) {
+    const theme = useTheme();
+    const [showPassword, setShowPassword] = React.useState(false);
 
-    const { http, isValidToken } = AuthUser();
+    const { http, setToken } = AuthUser();
 
-    if (isValidToken(localStorage.getItem('token'))) {
-        navigate("/todo")
-    }
-
+    // Function to handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (password !== cpassword) {
-            toast.error("Credentials not matched!!")
+        const data = new FormData(e.currentTarget);
+        const name = data.get('name');
+        const username = data.get('username');
+        const password = data.get('password');
+        try {
+            await http
+                .post("/auth/register", { name, username, password })
+                .then((res) => {
+                    setToken(res.data.token);
+                    toast.success("Registeration Success!");
+                    e.target.reset();
+                    handleRegister();
+                })
+                .catch((err) => {
+                    toast.error(err.response.data.message);
+                });
+        } catch (error) {
+            toast.error(error);
         }
-        else {
-            await http.post("/auth/register", { name, username, password }).then((res) => {
-                toast.success(res.data.message);
-                navigate("/login")
-            }).catch((err) => {
-                console.log(err);
-                toast.error(err.response.data.message);
-            })
-        }
+    };
+
+    const handleClose = () => {
+        handleRegister();
     }
 
     return (
-        <>
-            <Container
+        <Dialog
+            open={open}
+            TransitionComponent={Transition}
+            keepMounted
+            onClose={handleClose}
+            aria-describedby="alert-dialog-slide-description"
+            PaperProps={{
+                style: {
+                    marginTop: theme.spacing(8),
+                    marginBottom: theme.spacing(8),
+                    width: 400,
+                },
+            }}
+        >
+            <DialogContent
                 sx={{
+                    margin: 3,
                     display: 'flex',
-                    justifyContent: 'center',
+                    flexDirection: 'column',
                     alignItems: 'center',
-                    height: '100vh',
-                    backgroundColor: 'grey'
                 }}
-                maxWidth='xl'
             >
-                <Card
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'space-around',
-                        padding: '20px',
-                        width: '300px',
-                        height: '400px'
-                    }}
-                    component='form'
-                    onSubmit={handleSubmit}
-                >
+                <Avatar sx={{ bgcolor: 'secondary.main' }}>
+                    <LockOutlinedIcon />
+                </Avatar>
+                <DialogTitle>{"Register here..."}</DialogTitle>
+                <Box component="form" onSubmit={handleSubmit} required>
                     <TextField
                         required
-                        variant='outlined'
-                        type='text'
-                        name='name'
-                        label="Name"
-                        onChange={(e) => setName(e.target.value)}
+                        fullWidth
+                        hiddenLabel
+                        name="name"
+                        variant="outlined"
+                        placeholder="Enter your name*"
                     />
                     <TextField
                         required
-                        variant='outlined'
-                        type='text'
-                        name='username'
-                        label="Username"
-                        onChange={(e) => setUsername(e.target.value)}
+                        fullWidth
+                        hiddenLabel
+                        name="username"
+                        variant="outlined"
+                        placeholder="Enter your username*"
+                        sx={{ mt: 3 }}
                     />
                     <TextField
                         required
-                        variant='outlined'
-                        type='password'
-                        name='password'
-                        label="Password"
-                        onChange={(e) => setPassword(e.target.value)}
+                        fullWidth
+                        hiddenLabel
+                        name="password"
+                        variant="outlined"
+                        placeholder="Enter your password*"
+                        type={showPassword ? "text" : "password"}
+                        sx={{ mt: 3 }}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                                        {showPassword ? (
+                                            <VisibilityIcon />
+                                        ) : (
+                                            <VisibilityOffIcon />
+                                        )}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
                     />
-                    <TextField
-                        required
-                        variant='outlined'
-                        type='password'
-                        name='confirm_password'
-                        label="Confirm Password"
-                        onChange={(e) => setCPassword(e.target.value)}
-                    />
-                    <Button type='submit' variant='contained'>Register</Button>
-                </Card>
-            </Container>
-        </>
-    )
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        sx={{ mt: 4, mb: 3 }}
+                    >
+                        Register
+                    </Button>
+                    <Grid item textAlign='center' style={{ cursor: 'pointer' }}>
+                        <Link variant="body2" onClick={handleClose}>
+                            Already have an account? Sign In
+                        </Link>
+                    </Grid>
+                </Box>
+            </DialogContent>
+        </Dialog>
+    );
 }
