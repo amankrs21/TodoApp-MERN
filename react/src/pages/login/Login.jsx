@@ -61,6 +61,7 @@ export default function Login({ open, handleLogin }) {
 
     const handleRegister = () => {
         setShowRegister(!showRegister);
+        handleLogin();
     }
 
 

@@ -1,23 +1,22 @@
-import React from 'react';
-import { Container, Typography, Box, Divider, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, IconButton, Tooltip } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import {
+    Container, Typography, Box, Divider, TableContainer, Paper, TextField,
+    Table, TableHead, TableRow, TableCell, TableBody, IconButton, Tooltip
+} from '@mui/material';
 import LockResetIcon from '@mui/icons-material/LockReset';
 import { Navigate } from 'react-router-dom';
-import AuthUser from '../../components/AuthUser'
+import AuthUser from '../../components/AuthUser';
 import ResetPass from './ResetPass';
 
 export default function Users() {
     const { http, isAdmin } = AuthUser();
     const token = localStorage.getItem("token");
-    const [users, setUsers] = React.useState([]);
-    const [userId, setUserId] = React.useState(null);
-    const [openReset, setResetOpen] = React.useState(false);
+    const [users, setUsers] = useState([]);
+    const [userId, setUserId] = useState(null);
+    const [openReset, setResetOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
-    const handleResetOpen = (id) => {
-        setUserId(id);
-        setResetOpen(!openReset);
-    }
-
-    React.useEffect(() => {
+    useEffect(() => {
         if (token && isAdmin(token)) {
             http.get('/admin/users')
                 .then(response => {
@@ -29,19 +28,48 @@ export default function Users() {
         }
     }, []);
 
+    const handleResetOpen = (id) => {
+        setUserId(id);
+        setResetOpen(!openReset);
+    };
+
+    const handleSearchChange = (event) => {
+        setSearchTerm(event.target.value);
+    };
+
+    const filteredUsers = users.filter(user =>
+        user.username.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <>
             {token && isAdmin(token) ? (
                 <Container maxWidth='lg'>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: { xs: 'column', sm: 'row' },
+                        justifyContent: 'space-between',
+                        alignItems: { xs: 'stretch', sm: 'center' },
+                        mb: 1,
+                    }}>
                         <Typography variant="h4" component="h2" gutterBottom>
                             User's List
                         </Typography>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                            <TextField
+                                hiddenLabel
+                                name="search"
+                                variant="outlined"
+                                placeholder="Search by username"
+                                value={searchTerm}
+                                onChange={handleSearchChange}
+                            />
+                        </Box>
                     </Box>
                     <Divider />
                     <TableContainer component={Paper} elevation={0} variant="outlined">
                         <Table sx={{ minWidth: 650 }} aria-label="customized table">
-                            <TableHead className="">
+                            <TableHead>
                                 <TableRow style={{ fontSize: 30 }}>
                                     <TableCell>#</TableCell>
                                     <TableCell>Username</TableCell>
@@ -53,7 +81,7 @@ export default function Users() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {users.map((user, index) => (
+                                {filteredUsers.map((user, index) => (
                                     <TableRow key={index}>
                                         <TableCell>{index + 1}</TableCell>
                                         <TableCell>{user.username}</TableCell>
@@ -85,5 +113,5 @@ export default function Users() {
                 <Navigate to='/404' />
             )}
         </>
-    )
+    );
 }

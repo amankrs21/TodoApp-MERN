@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import {
     Box, Button, Container, Divider, Paper, Table, TableBody,
     TableCell, TableContainer, TableHead, TablePagination, TableRow,
-    Typography, IconButton, Switch, Tooltip
+    Typography, IconButton, Switch, Tooltip, TextField
 } from '@mui/material';
 import { toast } from 'react-toastify';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
@@ -22,6 +22,7 @@ export default function Todos() {
     const [openAdd, setAddOpen] = useState(false);
     const [openUpdate, setUpdateOpen] = useState(false);
     const [openDelete, setDeleteOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const columns = ['#', 'Title', 'Description', 'Completed', 'CreatedAt', 'Actions'];
 
@@ -72,16 +73,50 @@ export default function Todos() {
         }
     }, [http]);
 
+    const handleSearchChange = (event) => {
+        setSearchTerm(event.target.value);
+    };
+
+    const filteredTodos = todos.filter(todo =>
+        todo.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <Container maxWidth='lg'>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                <Typography variant="h4">Todo's List</Typography>
-                <Button variant="contained" color="primary" onClick={handleAddOpen}>
-                    Add a new Todo
-                </Button>
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    justifyContent: 'space-between',
+                    alignItems: { xs: 'stretch', sm: 'center' },
+                    mb: 2,
+                }}
+            >
+                <Typography variant="h4" sx={{ mb: { xs: 2, sm: 0 } }}>Todo's List</Typography>
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    justifyContent: 'space-between',
+                    alignItems: { xs: 'stretch', sm: 'center' },
+                    mb: 2,
+                }}>
+                    <TextField
+                        hiddenLabel
+                        name="search"
+                        variant="outlined"
+                        placeholder="Search by Todo Title"
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                        sx={{ mb: { xs: 2, sm: 0 }, mr: { xs: 0, sm: 1 } }}
+                    />
+                    <Button variant="contained" color="primary" onClick={handleAddOpen}>
+                        Add a new Todo
+                    </Button>
+                </Box>
             </Box>
+
             <Divider sx={{ mb: 2 }} />
-            {todos.length > 0 ? (
+            {filteredTodos.length > 0 ? (
                 <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                     <TableContainer sx={{ maxHeight: 310 }}>
                         <Table stickyHeader aria-label="sticky table">
@@ -95,7 +130,7 @@ export default function Todos() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {todos
+                                {filteredTodos
                                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     .map((todo, index) => {
                                         return (
@@ -147,7 +182,7 @@ export default function Todos() {
                     <TablePagination
                         rowsPerPageOptions={[5, 10, 25, 100]}
                         component="div"
-                        count={todos.length}
+                        count={filteredTodos.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}
