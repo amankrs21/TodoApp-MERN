@@ -4,9 +4,11 @@ import {
     Table, TableHead, TableRow, TableCell, TableBody, IconButton, Tooltip
 } from '@mui/material';
 import LockResetIcon from '@mui/icons-material/LockReset';
+import LoginIcon from '@mui/icons-material/Login';
 import { Navigate } from 'react-router-dom';
 import AuthUser from '../../components/AuthUser';
 import ResetPass from './ResetPass';
+import ActiveUser from './ActiveUser';
 
 export default function Users() {
     const { http, isAdmin } = AuthUser();
@@ -14,6 +16,7 @@ export default function Users() {
     const [users, setUsers] = useState([]);
     const [userId, setUserId] = useState(null);
     const [openReset, setResetOpen] = useState(false);
+    const [openActive, setActiveOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
@@ -26,11 +29,16 @@ export default function Users() {
                     console.log(error);
                 });
         }
-    }, []);
+    }, [openActive]);
 
     const handleResetOpen = (id) => {
         setUserId(id);
         setResetOpen(!openReset);
+    };
+
+    const handleActiveOpen = (id) => {
+        setUserId(id);
+        setActiveOpen(!openActive);
     };
 
     const handleSearchChange = (event) => {
@@ -89,7 +97,18 @@ export default function Users() {
                                         <TableCell>{user.isActive.toString()}</TableCell>
                                         <TableCell>{new Date(user.createdAt).toLocaleString()}</TableCell>
                                         <TableCell>{user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'New User'}</TableCell>
-                                        <TableCell>
+                                        <TableCell sx={{ display: 'flex' }}>
+                                            <div style={{ cursor: 'pointer' }} onClick={() => handleActiveOpen(user._id)}>
+                                                <Tooltip title="Change Active State">
+                                                    <IconButton
+                                                        color="inherit"
+                                                        aria-label="Change Active State"
+                                                        sx={{ alignSelf: 'center' }}
+                                                    >
+                                                        <LoginIcon color='info' />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </div>
                                             <div style={{ cursor: 'pointer' }} onClick={() => handleResetOpen(user._id)}>
                                                 <Tooltip title="Reset Password">
                                                     <IconButton
@@ -108,6 +127,7 @@ export default function Users() {
                         </Table>
                     </TableContainer>
                     {openReset && <ResetPass openReset={openReset} handleResetOpen={handleResetOpen} userId={userId} />}
+                    {openActive && <ActiveUser openActive={openActive} handleActiveOpen={handleActiveOpen} userId={userId} />}
                 </Container>
             ) : (
                 <Navigate to='/404' />
