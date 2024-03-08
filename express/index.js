@@ -16,7 +16,7 @@ app.use((req, res, next) => {
 })
 
 // setting up cors
-const allowedOrigins = ["http://localhost:5173", "http://192.168.0.163:5173"]
+const allowedOrigins = ["http://localhost:5173", "http://192.168.0.163:5173", "https://todomern.pages.dev"]
 const corsOptions = {
     origin: allowedOrigins,
     credentials: true,
