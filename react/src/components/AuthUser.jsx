@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 // Create an instance of Axios with default configurations
 const http = axios.create({
     // baseURL: "http://localhost:3000/",
-    baseURL: "http://192.168.0.163:3000/",
+    baseURL: "https://todomern-64mu.onrender.com/",
     headers: {
         "Content-type": "application/json"
     },
