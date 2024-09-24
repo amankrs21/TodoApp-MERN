@@ -11,7 +11,6 @@ const verifyUser = async (req, res, next) => {
             return res.status(401).json({ message: "Token is not provided or invalid" });
         }
 
-        // Verify the token and handle TokenExpiredError
         try {
             const decoded = jwt.verify(token, SecretKey);
             const user = await Users.findById(decoded?.id);
@@ -22,6 +21,8 @@ const verifyUser = async (req, res, next) => {
         } catch (error) {
             if (error.name === 'TokenExpiredError') {
                 return res.status(401).json({ message: "Token has expired" });
+            } else if (error.name === 'JsonWebTokenError') {
+                return res.status(401).json({ message: "Invalid token" });
             }
             throw error; // Rethrow other errors
         }
@@ -30,6 +31,7 @@ const verifyUser = async (req, res, next) => {
         return res.status(500).json({ message: "Internal Server Error" });
     }
 };
+
 
 
 const verifyAdmin = async (req, res, next) => {
