@@ -11,7 +11,7 @@ connect();
 
 // Middleware to log all the requests
 app.use((req, res, next) => {
-    console.log("Requesting...", [`(${req.method}) http://${req.ip.slice(7)}${req.url}`], Date().slice(0, 24));
+    console.log(`${Date().slice(0, 24)} => (${req.method}) http://${req.ip.slice(7)}${req.url}`);
     next()
 })
 
@@ -28,5 +28,5 @@ app.use('/', router);
 
 
 app.listen(3000, () => {
-    console.log("Express running on... http://127.0.0.1:3000");
+    console.log("Server is running on => http://localhost:3000");
 })

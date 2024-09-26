@@ -60,7 +60,7 @@ const updateTodo = async (req, res) => {
 
         return res.status(200).json({ message: "Todo Updated Successfully!!", updatedTodo });
     } catch (e) {
-        console.log(e);
+        console.error(e);
         return res.status(500).json({ message: "Something went wrong!" });
     }
 }
@@ -73,7 +73,7 @@ const deleteTodo = async (req, res) => {
         await todo.deleteOne();
         return res.status(200).json({ message: "Todo Deleted Successfully!!" })
     } catch (err) {
-        console.log(err);
+        console.error(err);
         return res.status(500).json({ message: "Something went wrong" })
     }
 }

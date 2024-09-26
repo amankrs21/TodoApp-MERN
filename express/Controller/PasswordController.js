@@ -2,11 +2,12 @@ const crypto = require('crypto');
 const Password = require('../Models/Password.js');
 const { currentUserID } = require("../Middleware/AuthUser.js");
 
-const defaultKey = 'G4j@2h!pX1q#k9M^sT7z%fL8vB3w*R6jY';
+const passwordKey = process.env.PASSWORD_KEY
 
-// code to encrypt the password
+// function to encrypt the password
 const encrypt = (text, key) => {
-    let finalKey = Buffer.from(key + defaultKey.slice(key.length), 'utf-8').slice(0, 32);
+    key = decodeURIComponent(encodeURIComponent(atob(key)));
+    let finalKey = Buffer.from(key + passwordKey.slice(key.length), 'utf-8').slice(0, 32);
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipheriv('aes-256-cbc', finalKey, iv);
     let encrypted = cipher.update(text, 'utf8', 'hex');
@@ -15,9 +16,10 @@ const encrypt = (text, key) => {
 };
 
 
-// code to decrypt the password
+// function to decrypt the password
 const decrypt = (text, key) => {
-    let finalKey = Buffer.from(key + defaultKey.slice(key.length), 'utf-8').slice(0, 32);
+    key = decodeURIComponent(encodeURIComponent(atob(key)));
+    let finalKey = Buffer.from(key + passwordKey.slice(key.length), 'utf-8').slice(0, 32);
     const textParts = text.split(':');
     const iv = Buffer.from(textParts.shift(), 'hex');
     const encryptedText = Buffer.from(textParts.join(':'), 'hex');
@@ -28,31 +30,8 @@ const decrypt = (text, key) => {
 };
 
 
-const passwordAdd = async (req, res) => {
-    try {
-        const { key, name, username, password: rawPassword } = req.body;
-        if (!key || !name || !username || !rawPassword) {
-            return res.status(400).json({ message: "Please provide all required fields!" });
-        }
-
-        const userID = await currentUserID(req, res);
-        const password = new Password({
-            name,
-            username,
-            password: encrypt(rawPassword, key),
-            createdBy: userID
-        });
-
-        await password.save();
-        return res.status(201).json({ message: "Password Added Successfully!", password });
-
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: "Something went wrong!" });
-    }
-};
-
-const passwordGet = async (req, res) => {
+// function to get all the passwords of the user
+const getPasswords = async (req, res) => {
     try {
         const { key } = req.body;
         if (!key) {
@@ -75,4 +54,85 @@ const passwordGet = async (req, res) => {
     }
 };
 
-module.exports = { passwordAdd, passwordGet };
+
+// function to add a new password
+const addPassword = async (req, res) => {
+    try {
+        const { key, name, username, password: rawPassword } = req.body;
+        if (!key || !name || !username || !rawPassword) {
+            return res.status(400).json({ message: "Please provide all required fields!" });
+        }
+
+        const userID = await currentUserID(req, res);
+        try {
+            let encryptedPassword = decrypt(rawPassword, key);
+        } catch (error) {
+            console.error(error);
+            return res.status(400).json({ message: "Invalid Key!" });
+        }
+        const password = new Password({
+            name,
+            username,
+            password: encryptedPassword,
+            createdBy: userID
+        });
+
+        await password.save();
+        return res.status(201).json({ message: "Password Added Successfully!", password });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Something went wrong!" });
+    }
+};
+
+
+// function to update a password
+const updatePassword = async (req, res) => {
+    try {
+        const { id, key, name, username, password: rawPassword } = req.body;
+        if (!id || !key || !name || !username || !rawPassword) {
+            return res.status(400).json({ message: "Please provide all required fields!" });
+        }
+        const password = await Password.findById(id);
+        if (!password) {
+            return res.status(404).json({ message: "Password not found!" });
+        }
+        try {
+            let encryptedPassword = decrypt(rawPassword, key);
+        } catch (error) {
+            console.error(error);
+            return res.status(400).json({ message: "Invalid Key!" });
+        }
+        password.name = name;
+        password.username = username;
+        password.password = encryptedPassword;
+        await password.save();
+        return res.status(200).json({ message: "Password Updated Successfully!" });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Something went wrong!" });
+    }
+}
+
+
+// function to delete a password
+const deletePassword = async (req, res) => {
+    try {
+        const { id } = req.body;
+        if (!id) {
+            return res.status(400).json({ message: "Please provide the password id!" });
+        }
+        const password = await Password.findById(id);
+        if (!password) {
+            return res.status(404).json({ message: "Password not found!" });
+        }
+        await Password.findByIdAndDelete(id);
+        return res.status(200).json({ message: "Password Deleted Successfully!" });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Something went wrong!" });
+    }
+}
+
+module.exports = { getPasswords, addPassword, updatePassword, deletePassword };
