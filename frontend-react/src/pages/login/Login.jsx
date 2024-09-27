@@ -1,11 +1,18 @@
 import './Login.css';
-import { useState } from 'react';  // Import useState for managing form state
+import { useState } from 'react';
 import { Box } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { Avatar, Typography, TextField, Button } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+
+
+import AuthUser from '../../components/AuthUser';
 
 export default function Login() {
+    const navigate = useNavigate();
+    const { http, setToken } = AuthUser();
     const [errors, setErrors] = useState({});
     const [formData, setFormData] = useState({
         email: '',
@@ -19,7 +26,7 @@ export default function Login() {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         let tempErrors = {};
 
@@ -36,7 +43,18 @@ export default function Login() {
         setErrors(tempErrors);
 
         if (Object.keys(tempErrors).length === 0) {
-            console.log('Form submitted', formData);
+            try {
+                const response = await http.post('/auth/login', formData);
+                setToken(response.data.token);
+                toast.success(response.data.message);
+                setTimeout(() => {
+                    toast.info("Welcome to the Secure Vault!!");
+                }, 3000);
+                navigate('/home');
+            } catch (error) {
+                console.error("Login failed:", error);
+                toast.error(error.response.data.message);
+            }
         }
     };
 

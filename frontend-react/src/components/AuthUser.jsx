@@ -19,9 +19,14 @@ const http = axios.create({
 // Intercept responses to handle unauthorized errors
 http.interceptors.response.use(
     (response) => {
+        console.log(" hiews:", response);
         return response;
     },
     (error) => {
+        console.error("Response error ihdsv:", error);
+        if (!error.response && error.message === "Network Error") {
+            window.location = "/server";
+        }
         if (error.response.status === 403) {
             localStorage.removeItem("token");
             window.location = "/";

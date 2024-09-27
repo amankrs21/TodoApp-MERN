@@ -5,7 +5,7 @@ const SecretKey = process.env.SECRET_KEY;
 
 const userLogin = async (req, res) => {
     try {
-        const user = await Users.findOne({ username: req.body.username });
+        const user = await Users.findOne({ username: req.body.email });
         if (!user) {
             return res.status(401).json({ message: "User Not Found!!" });
         }
