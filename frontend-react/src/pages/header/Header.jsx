@@ -37,7 +37,7 @@ export default function Header() {
                 <Toolbar disableGutters>
                     <AdbIcon sx={{ display: { xs: 'none', md: 'flex' } }} />
                     <Typography noWrap variant="h6" sx={{ display: { xs: 'none', md: 'flex' } }}>
-                        &nbsp;MERN Vault
+                        &nbsp;Secure Vault
                     </Typography>
 
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }} ml={3}>
@@ -70,7 +70,7 @@ export default function Header() {
 
                     <AdbIcon sx={{ display: { xs: 'flex', md: 'none' } }} />
                     <Typography noWrap variant="h5" sx={{ display: { xs: 'flex', md: 'none' }, flexGrow: 1 }}>
-                        &nbsp;MERN Vault
+                        &nbsp;Secure Vault
                     </Typography>
 
                     <Box sx={{ flexGrow: 0 }}>

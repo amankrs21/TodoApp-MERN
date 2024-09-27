@@ -16,7 +16,7 @@ export default function PrivateRoutes() {
     return (
         <>
             <Header />
-            <div style={{ marginTop: '75px' }}><Outlet /></div>
+            <div style={{ marginTop: '9vh', height: '91vh', overflowY: 'auto' }}><Outlet /></div>
         </>
     );
 };
