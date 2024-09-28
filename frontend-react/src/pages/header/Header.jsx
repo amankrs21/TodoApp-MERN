@@ -12,8 +12,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import HomeIcon from '@mui/icons-material/Home';
 import EnhancedEncryptionIcon from '@mui/icons-material/EnhancedEncryption';
 import DescriptionIcon from '@mui/icons-material/Description';
-import HailIcon from '@mui/icons-material/Hail';
-import ContactPageIcon from '@mui/icons-material/ContactPage';
+import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
 
 
 export default function Header() {
@@ -50,11 +49,8 @@ export default function Header() {
                         <MenuItem onClick={() => navigate('/notes')} className={isActive('notes') ? "active-route" : "non-active-route"}>
                             <DescriptionIcon />&nbsp;<Typography variant="body1">Notes</Typography>
                         </MenuItem>
-                        <MenuItem onClick={() => navigate('/about')} className={isActive('about') ? "active-route" : "non-active-route"}>
-                            <HailIcon />&nbsp;<Typography variant="body1">About</Typography>
-                        </MenuItem>
-                        <MenuItem onClick={() => navigate('/contact')} className={isActive('contact') ? "active-route" : "non-active-route"}>
-                            <ContactPageIcon />&nbsp;<Typography variant="body1">Contact</Typography>
+                        <MenuItem onClick={() => navigate('/connect')} className={isActive('connect') ? "active-route" : "non-active-route"}>
+                            <ConnectWithoutContactIcon />&nbsp;<Typography variant="body1">Connect</Typography>
                         </MenuItem>
                     </Box>
 
@@ -104,13 +100,9 @@ export default function Header() {
                         <MenuItem onClick={() => toggleDrawer('notes')} className={isActive('notes') ? "pop-active" : "pop-non-active"}>
                             <DescriptionIcon />&nbsp;<Typography variant="body1" fontWeight={800}>Notes</Typography>
                         </MenuItem>
-                        <MenuItem onClick={() => toggleDrawer('about')} className={isActive('about') ? "pop-active" : "pop-non-active"}>
-                            <HailIcon />&nbsp;<Typography variant="body1" fontWeight={800}>About</Typography>
+                        <MenuItem onClick={() => toggleDrawer('connect')} className={isActive('connect') ? "pop-active" : "pop-non-active"}>
+                            <ConnectWithoutContactIcon />&nbsp;<Typography variant="body1" fontWeight={800}>Connect</Typography>
                         </MenuItem>
-                        <MenuItem onClick={() => toggleDrawer('contact')} className={isActive('contact') ? "pop-active" : "pop-non-active"}>
-                            <ContactPageIcon />&nbsp;<Typography variant="body1" fontWeight={800}>Contact</Typography>
-                        </MenuItem>
-
                     </Box>
                 </Collapse>
             </Container>

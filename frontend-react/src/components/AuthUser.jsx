@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 // Create an instance of Axios with default configurations
 const http = axios.create({
-    baseURL: "http://localhost:3000/",
+    baseURL: "http://192.168.1.38:3000/api/",
     // baseURL: "https://todomern-64mu.onrender.com/",
     headers: {
         "Content-type": "application/json"
@@ -19,13 +19,11 @@ const http = axios.create({
 // Intercept responses to handle unauthorized errors
 http.interceptors.response.use(
     (response) => {
-        console.log(" hiews:", response);
         return response;
     },
     (error) => {
-        console.error("Response error ihdsv:", error);
         if (!error.response && error.message === "Network Error") {
-            window.location = "/server";
+            window.location = "/503";
         }
         if (error.response.status === 403) {
             localStorage.removeItem("token");

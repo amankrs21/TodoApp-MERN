@@ -23,4 +23,11 @@ router.post('/password/add', verifyUser, addPassword);
 router.patch('/password/update', verifyUser, updatePassword);
 router.delete('/password/delete', verifyUser, deletePassword);
 
+// test route
+router.get('/test', (req, res) => {
+    res.send({
+        message: "API is working fine"
+    });
+})
+
 module.exports = router;
