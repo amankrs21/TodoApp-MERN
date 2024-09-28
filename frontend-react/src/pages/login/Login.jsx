@@ -1,5 +1,5 @@
 import './Login.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Box } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { Avatar, Typography, TextField, Button } from '@mui/material';
@@ -12,12 +12,18 @@ import AuthUser from '../../components/AuthUser';
 
 export default function Login() {
     const navigate = useNavigate();
-    const { http, setToken } = AuthUser();
+    const { http, setToken, } = AuthUser();
     const [errors, setErrors] = useState({});
     const [formData, setFormData] = useState({
         email: '',
         password: '',
     });
+
+    useEffect(() => {
+        if (localStorage.getItem('token')) {
+            navigate('/home');
+        }
+    }, [navigate]);
 
     const handleChange = (e) => {
         setFormData({

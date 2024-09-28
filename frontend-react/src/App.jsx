@@ -7,6 +7,7 @@ import PrivateRoutes from "./components/PrivateRoutes";
 import Home from "./pages/home/Home";
 import Vault from "./pages/vault/Vault";
 import Notes from "./pages/notes/Notes";
+import PageNotFound from "./components/PageNotFound";
 
 export default function App() {
   return (
@@ -14,7 +15,9 @@ export default function App() {
       <ToastContainer theme="colored" draggable={false} hideProgressBar={true} position="bottom-right" />
       <Routes>
         <Route path='/' element={<Navigate to='/login' />} />
+        <Route path='*' element={<Navigate to='/404' />} />
         <Route path='/login' element={<Login />} />
+        <Route path="/404" element={<PageNotFound />} />
         <Route path="/" element={<PrivateRoutes />}>
           <Route path='/home' element={<Home />} />
           <Route path='/vault' element={<Vault />} />
