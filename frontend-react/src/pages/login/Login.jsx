@@ -3,9 +3,9 @@ import { useEffect, useState } from 'react';
 import { Box } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { Avatar, Typography, TextField, Button } from '@mui/material';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 
 import AuthUser from '../../components/AuthUser';
@@ -53,8 +53,9 @@ export default function Login() {
                 const response = await http.post('/auth/login', formData);
                 setToken(response.data.token);
                 toast.success(response.data.message);
+                localStorage.setItem('user', JSON.stringify(response.data.user));
                 setTimeout(() => {
-                    toast.info("Welcome to the Secure Vault!!");
+                    toast.info(`Welcome ${response.data.user.name} to the Secure Vault!`);
                 }, 3000);
                 navigate('/home');
             } catch (error) {

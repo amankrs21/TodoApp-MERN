@@ -10,7 +10,7 @@ export default function PrivateRoutes() {
 
     // If the token is not valid, redirect to the login page
     if (!token || !isValidToken(token)) {
-        return <Navigate to="404" />;
+        return <Navigate to="login" />;
     }
 
     // If the token is valid, render the child routes

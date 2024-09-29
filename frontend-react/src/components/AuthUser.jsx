@@ -2,6 +2,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
 
 // Create an instance of Axios with default configurations
 const http = axios.create({
@@ -26,11 +27,11 @@ http.interceptors.response.use(
             window.location = "/503";
         }
         if (error.response.status === 403) {
-            localStorage.removeItem("token");
+            localStorage.clear();
             window.location = "/";
         }
         if (localStorage.getItem("token") && error.response.status === 401) {
-            localStorage.removeItem("token");
+            localStorage.clear();
             window.location = "/";
         }
         return Promise.reject(error);
@@ -49,7 +50,7 @@ export default function AuthUser() {
             http.defaults.headers.common.Authorization = `Bearer ${savedToken}`;
         }
         else {
-            localStorage.removeItem("token");
+            localStorage.clear();
         }
     }, []);
 
@@ -69,6 +70,8 @@ export default function AuthUser() {
                 const decodedToken = jwtDecode(token);
                 const currentTime = Date.now() / 1000;
                 if (decodedToken.exp < currentTime) {
+                    toast.warning("Session expired. Please login again.");
+                    localStorage.clear();
                     return false;
                 }
                 return true;

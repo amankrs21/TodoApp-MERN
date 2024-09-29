@@ -41,7 +41,7 @@ const getPasswords = async (req, res) => {
         const passwords = await Password.find({ createdBy: userID });
         try {
             passwords.forEach(password => {
-                password.password = decrypt(password.password, req.body.key);
+                password.password = decrypt(password.password, key);
             });
         } catch (error) {
             console.error(error);
@@ -58,20 +58,21 @@ const getPasswords = async (req, res) => {
 // function to add a new password
 const addPassword = async (req, res) => {
     try {
-        const { key, name, username, password: rawPassword } = req.body;
-        if (!key || !name || !username || !rawPassword) {
+        let encryptedPassword = "";
+        const { key, title, username, password: rawPassword } = req.body;
+        if (!key || !title || !username || !rawPassword) {
             return res.status(400).json({ message: "Please provide all required fields!" });
         }
 
         const userID = await currentUserID(req, res);
         try {
-            let encryptedPassword = decrypt(rawPassword, key);
+            encryptedPassword = encrypt(rawPassword, key);
         } catch (error) {
             console.error(error);
             return res.status(400).json({ message: "Invalid Key!" });
         }
         const password = new Password({
-            name,
+            title,
             username,
             password: encryptedPassword,
             createdBy: userID

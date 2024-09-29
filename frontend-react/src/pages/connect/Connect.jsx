@@ -57,7 +57,7 @@ export default function Connect() {
                                         Send me an Email 📧
                                     </Button>&nbsp;&nbsp;
                                     <Button variant="contained" href="https://amankrs21.pages.dev" target="_blank" rel="noopener noreferrer">
-                                        Visit Portfolio Website 🌐
+                                        Visit My Portfolio 🌐
                                     </Button>
                                 </div>
                             </List>

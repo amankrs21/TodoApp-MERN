@@ -4,11 +4,12 @@ import { Container, Typography, Divider } from '@mui/material';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 export default function Home() {
+    const userInfo = JSON.parse(localStorage.getItem('user')) || null;
     return (
         <div className="home-main">
             <Container maxWidth="lg">
                 <Typography pt={2} variant="h4" align="center" gutterBottom >
-                    Hi User Name! 👋<br />
+                    Hi  {userInfo ? userInfo.name.split(' ')[0] : "User"}👋<br />
                     Welcome to <a>Secure Vault </a> 🔐 Application!
                 </Typography>
                 <Divider />
@@ -45,7 +46,7 @@ export default function Home() {
                         </Card>
                     </Grid>
                 </Grid> */}
-                <Typography variant="body2" align="center" mt={6}>
+                <Typography variant="body2" align="center" my={5}>
                     Powered by React and enhanced with Material UI, our application delivers a seamless and intuitive user experience. React&apos;s component-based structure and virtual DOM enable dynamic, responsive interfaces, while Material UI&apos;s pre-built components offer a sleek, modern design.
                 </Typography>
             </Container>
