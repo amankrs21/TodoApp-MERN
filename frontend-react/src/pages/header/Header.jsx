@@ -40,7 +40,7 @@ export default function Header() {
                     </Typography>
 
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }} ml={3}>
-                        <MenuItem onClick={() => navigate('/')} className={isActive('home') ? "active-route" : "non-active-route"}>
+                        <MenuItem onClick={() => navigate('/home')} className={isActive('home') ? "active-route" : "non-active-route"}>
                             <HomeIcon />&nbsp;<Typography variant="body1">Home</Typography>
                         </MenuItem>
                         <MenuItem onClick={() => navigate('/vault')} className={isActive('vault') ? "active-route" : "non-active-route"}>
@@ -71,8 +71,8 @@ export default function Header() {
 
                     <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Logout User!!">
-                            <Button variant="contained" color="warning" className='logout-button' sx={{ minWidth: '40px', padding: '8px' }}>
-                                {/* Logout &nbsp;  */}
+                            <Button variant="contained" color="warning" className='logout-button' sx={{ minWidth: '40px', padding: '8px' }}
+                                onClick={() => localStorage.clear()}>
                                 <LogoutIcon fontSize='small' />
                             </Button>
                         </Tooltip>

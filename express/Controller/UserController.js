@@ -16,7 +16,11 @@ const userLogin = async (req, res) => {
             const token = jwt.sign({ id: user._id, role: user.role }, SecretKey, { expiresIn: '30m' });
             user.lastLogin = Date.now();
             await user.save();
-            return res.status(200).json({ message: "Login Successful!!", token, user });
+            const vault = await UserVault.find({ createdBy: user._id });
+            if (vault.length === 0) {
+                return res.status(200).json({ message: "Login Successful!!", token, user, firstLogin: true });
+            }
+            return res.status(200).json({ message: "Login Successful!!", token, user, firstLogin: false });
         } else {
             return res.status(401).json({ message: "Invalid Credentials!!" });
         }

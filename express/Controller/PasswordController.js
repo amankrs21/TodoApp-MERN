@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const Password = require('../Models/Password.js');
+const UserVault = require('../Models/Password.js');
 const { currentUserID } = require("../Middleware/AuthUser.js");
 
 const passwordKey = process.env.PASSWORD_KEY
@@ -38,7 +38,7 @@ const getPasswords = async (req, res) => {
             return res.status(400).json({ message: "Please provide the key!" });
         }
         const userID = await currentUserID(req, res);
-        const passwords = await Password.find({ createdBy: userID });
+        const passwords = await UserVault.find({ createdBy: userID });
         try {
             passwords.forEach(password => {
                 password.password = decrypt(password.password, key);
@@ -71,7 +71,7 @@ const addPassword = async (req, res) => {
             console.error(error);
             return res.status(400).json({ message: "Invalid Key!" });
         }
-        const password = new Password({
+        const password = new UserVault({
             title,
             username,
             password: encryptedPassword,
@@ -91,16 +91,17 @@ const addPassword = async (req, res) => {
 // function to update a password
 const updatePassword = async (req, res) => {
     try {
+        let encryptedPassword = "";
         const { id, key, name, username, password: rawPassword } = req.body;
         if (!id || !key || !name || !username || !rawPassword) {
             return res.status(400).json({ message: "Please provide all required fields!" });
         }
-        const password = await Password.findById(id);
+        const password = await UserVault.findById(id);
         if (!password) {
             return res.status(404).json({ message: "Password not found!" });
         }
         try {
-            let encryptedPassword = decrypt(rawPassword, key);
+            encryptedPassword = decrypt(rawPassword, key);
         } catch (error) {
             console.error(error);
             return res.status(400).json({ message: "Invalid Key!" });
@@ -124,7 +125,7 @@ const deletePassword = async (req, res) => {
         if (!id) {
             return res.status(400).json({ message: "Please provide the password id!" });
         }
-        const password = await Password.findById(id);
+        const password = await UserVault.findById(id);
         if (!password) {
             return res.status(404).json({ message: "Password not found!" });
         }

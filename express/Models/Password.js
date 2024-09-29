@@ -26,4 +26,4 @@ const PasswordSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Password', PasswordSchema);
+module.exports = mongoose.model('UserVault', PasswordSchema);
