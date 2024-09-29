@@ -8,22 +8,32 @@ import { toast } from 'react-toastify';
 import SearchIcon from '@mui/icons-material/Search';
 import AuthUser from '../../components/AuthUser';
 import PopupPin from './PopupPin';
+import AddVault from './AddVault';
 
 export default function Vault() {
     const { http } = AuthUser();
-    const [open, setOpen] = useState(false);
     const [data, setData] = useState([]);
+    const [open, setOpen] = useState(false);
+    const [openAdd, setOpenAdd] = useState(false);
+    const [firstLogin, setFirstLogin] = useState(null);
 
     useEffect(() => {
-        const securityPin = localStorage.getItem('SecurityPin') || null;
+        const authData = JSON.parse(localStorage.getItem('authData'));
 
-        if (securityPin) {
-            const fetchData = async () => {
+        if (authData && authData.user) {
+            setFirstLogin(authData.user.firstLogin);
+        }
+        const pin = localStorage.getItem('SecurityPin');
+
+        if (!authData && !pin) {
+            setOpen(true);
+        } else if (pin && !firstLogin) {
+            (async () => {
                 try {
-                    const response = await http.post('/passwords', { key: securityPin });
+                    const response = await http.post('/passwords', { key: pin });
                     setData(response.data);
                 } catch (error) {
-                    if (error.response.status === 400) {
+                    if (error.response && error.response.status === 400) {
                         toast.error("Invalid Security Pin!");
                         localStorage.removeItem('SecurityPin');
                         setOpen(true);
@@ -32,16 +42,14 @@ export default function Vault() {
                         console.error(error);
                     }
                 }
-            };
-            fetchData();
-        } else {
-            setOpen(true);
+            })();
         }
-    }, [http]);
+    }, [firstLogin, http]);
 
     return (
         <Container maxWidth="lg">
             {open && <PopupPin open={open} setOpen={setOpen} />}
+            {openAdd && <AddVault openAdd={openAdd} setOpenAdd={setOpenAdd} />}
 
             <Grid container justifyContent="space-between" alignItems="center" mt={3} spacing={2}>
                 <Grid size={{ xs: 12, md: 6 }} textAlign={{ xs: 'center', md: 'left' }}>
@@ -62,7 +70,7 @@ export default function Vault() {
                                 }
                             }}
                         />
-                        <Button variant='contained' color='primary'
+                        <Button variant='contained' color='primary' onClick={() => setOpenAdd(true)}
                             sx={{ paddingX: 3, whiteSpace: 'nowrap', backgroundColor: '#1976d2' }}
                         >
                             Add New
@@ -73,8 +81,18 @@ export default function Vault() {
 
             <Divider sx={{ marginY: 2 }} />
 
-            {data.length > 0 ? (
-
+            {firstLogin ? (
+                <div style={{ textAlign: "center", marginTop: "50px" }}>
+                    <Typography variant="h6">
+                        No secure passwords available. Please add new records.
+                    </Typography>
+                    <Button variant='contained' color='primary' onClick={() => setOpenAdd(true)}
+                        sx={{ paddingX: 3, whiteSpace: 'nowrap', backgroundColor: '#1976d2', marginTop: 2 }}
+                    >
+                        Add New Password
+                    </Button>
+                </div>
+            ) : (
                 <TableContainer component={Paper} sx={{ marginTop: 2 }}>
                     <Table>
                         <TableHead>
@@ -103,16 +121,6 @@ export default function Vault() {
                         </TableBody>
                     </Table>
                 </TableContainer>
-            ) : (
-                <div style={{ textAlign: "center", marginTop: "50px" }}>
-                    <Typography variant="h6">
-                        No secure passwords available. Please add new records.
-                    </Typography>
-                    <Button variant='contained' color='primary'
-                        sx={{ paddingX: 3, whiteSpace: 'nowrap', backgroundColor: '#1976d2', marginTop: 2 }}>
-                        Add New Password
-                    </Button>
-                </div>
             )}
         </Container>
     );

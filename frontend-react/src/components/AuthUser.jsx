@@ -61,6 +61,7 @@ export default function AuthUser() {
                 const currentTime = Date.now() / 1000;
                 if (decodedToken.exp < currentTime) {
                     toast.warning("Session expired. Please log in again.");
+                    window.location = "/";
                     localStorage.clear();
                     return false;
                 }
