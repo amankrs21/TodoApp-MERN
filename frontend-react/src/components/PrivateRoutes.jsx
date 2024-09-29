@@ -1,19 +1,21 @@
-import { Outlet, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 import AuthUser from './AuthUser';
 import Header from '../pages/header/Header';
 
 export default function PrivateRoutes() {
+    const navigate = useNavigate();
     const { isValidToken } = AuthUser();
 
-    const token = localStorage.getItem("token");
+    useEffect(() => {
+        const authData = JSON.parse(localStorage.getItem("authData"));
+        if (!authData || !isValidToken(authData.token)) {
+            navigate('/login');
+            return;
+        }
+    }, [navigate, isValidToken]);
 
-    // If the token is not valid, redirect to the login page
-    if (!token || !isValidToken(token)) {
-        return <Navigate to="login" />;
-    }
-
-    // If the token is valid, render the child routes
     return (
         <>
             <Header />

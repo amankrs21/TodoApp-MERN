@@ -4,12 +4,12 @@ import { Container, Typography, Divider } from '@mui/material';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 export default function Home() {
-    const userInfo = JSON.parse(localStorage.getItem('user')) || null;
+    const authData = JSON.parse(localStorage.getItem('authData')) || null;
     return (
         <div className="home-main">
             <Container maxWidth="lg">
                 <Typography pt={2} variant="h4" align="center" gutterBottom >
-                    Hi  {userInfo ? userInfo.name.split(' ')[0] : "User"}👋<br />
+                    Hi  {authData ? authData.user.name.split(' ')[0] : "User"}👋<br />
                     Welcome to <a>Secure Vault </a> 🔐 Application!
                 </Typography>
                 <Divider />

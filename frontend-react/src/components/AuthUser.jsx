@@ -1,36 +1,26 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
+import { useState, useEffect } from "react";
 
-// Create an instance of Axios with default configurations
+// Axios instance with default configurations
 const http = axios.create({
     baseURL: "http://192.168.1.38:3000/api/",
-    // baseURL: "https://todomern-64mu.onrender.com/",
     headers: {
-        "Content-type": "application/json"
+        "Content-Type": "application/json",
     },
     xsrfCookieName: "csrftoken",
     xsrfHeaderName: "X-CSRFToken",
-    credentials: "include",
     withCredentials: true,
 });
 
-// Intercept responses to handle unauthorized errors
+// Axios response interceptor to handle errors
 http.interceptors.response.use(
-    (response) => {
-        return response;
-    },
+    (response) => response,
     (error) => {
         if (!error.response && error.message === "Network Error") {
             window.location = "/503";
-        }
-        if (error.response.status === 403) {
-            localStorage.clear();
-            window.location = "/";
-        }
-        if (localStorage.getItem("token") && error.response.status === 401) {
+        } else if (error.response.status === 403 || error.response.status === 401) {
             localStorage.clear();
             window.location = "/";
         }
@@ -39,38 +29,38 @@ http.interceptors.response.use(
 );
 
 export default function AuthUser() {
-    const navigate = useNavigate();
     const [token, setToken] = useState(null);
-
     useEffect(() => {
-        // Load the saved token from local storage and validate it
-        const savedToken = localStorage.getItem("token");
-        if (savedToken && isValidToken(savedToken)) {
-            setToken(savedToken);
-            http.defaults.headers.common.Authorization = `Bearer ${savedToken}`;
-        }
-        else {
-            localStorage.clear();
+        const authData = localStorage.getItem("authData");
+        if (authData) {
+            const parsedData = JSON.parse(authData);
+            if (isValidToken(parsedData.token)) {
+                setToken(parsedData.token);
+                http.defaults.headers.common.Authorization = `Bearer ${parsedData.token}`;
+            } else {
+                localStorage.clear();
+            }
         }
     }, []);
 
-    const saveToken = (token) => {
+    // Save the token and user data in localStorage and set headers
+    const saveToken = (token, user) => {
         if (isValidToken(token)) {
-            localStorage.setItem("token", token);
             setToken(token);
+            const authData = { token, user };
+            localStorage.setItem("authData", JSON.stringify(authData));
             http.defaults.headers.common.Authorization = `Bearer ${token}`;
-            navigate("/");
         }
     };
 
+    // Validate if the token is not expired
     const isValidToken = (token) => {
         if (token) {
             try {
-                // Decode the JWT token and check its expiration
                 const decodedToken = jwtDecode(token);
                 const currentTime = Date.now() / 1000;
                 if (decodedToken.exp < currentTime) {
-                    toast.warning("Session expired. Please login again.");
+                    toast.warning("Session expired. Please log in again.");
                     localStorage.clear();
                     return false;
                 }
@@ -80,23 +70,22 @@ export default function AuthUser() {
                 return false;
             }
         }
+        return false;
     };
 
-    const isLoggedIn = (token) => {
-        return token && isValidToken(token);
-    };
-
-    const isAdmin = (token) => {
-        if (isLoggedIn(token)) {
-            const decodedToken = jwtDecode(token);
-            return decodedToken.role === "admin";
+    // Check if the logged-in user is an admin
+    const isAdmin = () => {
+        const authData = localStorage.getItem("authData");
+        if (authData) {
+            const { token, user } = JSON.parse(authData);
+            return isValidToken(token) && user.role === "admin";
         }
+        return false;
     };
 
     return {
         setToken: saveToken,
         isValidToken,
-        isLoggedIn,
         isAdmin,
         token,
         http,

@@ -7,12 +7,11 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
-
 import AuthUser from '../../components/AuthUser';
 
 export default function Login() {
     const navigate = useNavigate();
-    const { http, setToken, } = AuthUser();
+    const { http, setToken } = AuthUser();
     const [errors, setErrors] = useState({});
     const [formData, setFormData] = useState({
         email: '',
@@ -20,10 +19,9 @@ export default function Login() {
     });
 
     useEffect(() => {
-        if (localStorage.getItem('token')) {
-            navigate('/home');
-        }
-    }, [navigate]);
+        const authData = JSON.parse(localStorage.getItem("authData")) || null;
+        if (authData && authData.token) { navigate('/home'); }
+    }, [http, navigate]);
 
     const handleChange = (e) => {
         setFormData({
@@ -51,16 +49,16 @@ export default function Login() {
         if (Object.keys(tempErrors).length === 0) {
             try {
                 const response = await http.post('/auth/login', formData);
-                setToken(response.data.token);
+                setToken(response.data.token, response.data.user);
                 toast.success(response.data.message);
-                localStorage.setItem('user', JSON.stringify(response.data.user));
+                navigate('/home');
                 setTimeout(() => {
                     toast.info(`Welcome ${response.data.user.name} to the Secure Vault!`);
                 }, 3000);
-                navigate('/home');
             } catch (error) {
                 console.error("Login failed:", error);
-                toast.error(error.response.data.message);
+                let errorMessage = error.response?.data?.message || "An error occurred during login. Please try again.";
+                toast.error(errorMessage);
             }
         }
     };
