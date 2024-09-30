@@ -47,6 +47,7 @@ export default function Vault() {
     }, [firstLogin, http]);
 
     const handleAddData = (data) => {
+        // Add your logic to add new data to the table
         console.log(data);
     }
     return (
