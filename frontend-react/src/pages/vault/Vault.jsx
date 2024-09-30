@@ -12,48 +12,66 @@ import AddVault from './AddVault';
 
 export default function Vault() {
     const { http } = AuthUser();
-    const [data, setData] = useState([]);
-    const [open, setOpen] = useState(false);
+    const [openPin, setOpenPin] = useState(false);
     const [openAdd, setOpenAdd] = useState(false);
-    const [firstLogin, setFirstLogin] = useState(null);
+    const [vaultData, setVaultData] = useState([]);
+
+    const firstLogin = localStorage.getItem('authData') ? JSON.parse(localStorage.getItem('authData')).user.firstLogin : false;
+
+    const handleFetch = async (key) => {
+        try {
+            const response = await http.post('/passwords', { key });
+            if (response.data.length == 0) {
+                localStorage.removeItem('SecurityPin');
+                return
+            }
+            setVaultData(response.data);
+            toast.success('Data fetched successfully!');
+        } catch (error) {
+            if (error.response && error.response.status === 400) {
+                toast.error("Invalid Security Pin!");
+                setOpenPin(true);
+            } else {
+                toast.error("Something went wrong!");
+                console.error(error);
+            }
+        }
+    }
+
+    const handleAdd = async (data) => {
+        try {
+            const response = await http.post('/password/add', data);
+            toast.success(response.data.message);
+            const authData = JSON.parse(localStorage.getItem('authData'));
+            authData.user.firstLogin = false;
+            localStorage.setItem('authData', JSON.stringify(authData));
+            localStorage.setItem('SecurityPin', data.key);
+            setVaultData([...vaultData, response.data.password]);
+        } catch (error) {
+            console.error(error);
+            if (error.response && error.response.status === 400) {
+                setOpenPin(true);
+                return toast.error(error.response.data.message);
+            }
+            toast.error('Something went wrong!');
+        }
+    }
 
     useEffect(() => {
-        const authData = JSON.parse(localStorage.getItem('authData'));
-
-        if (authData && authData.user) {
-            setFirstLogin(authData.user.firstLogin);
+        if (!firstLogin) {
+            const pin = localStorage.getItem('SecurityPin') || null;
+            if (pin) {
+                handleFetch(pin);
+            } else {
+                setOpenPin(true);
+            }
         }
-        const pin = localStorage.getItem('SecurityPin');
+    }, []);
 
-        if (!firstLogin && !pin) {
-            setOpen(true);
-        } else if (pin && !firstLogin) {
-            (async () => {
-                try {
-                    const response = await http.post('/passwords', { key: pin });
-                    setData(response.data);
-                } catch (error) {
-                    if (error.response && error.response.status === 400) {
-                        toast.error("Invalid Security Pin!");
-                        localStorage.removeItem('SecurityPin');
-                        setOpen(true);
-                    } else {
-                        toast.error("Something went wrong!");
-                        console.error(error);
-                    }
-                }
-            })();
-        }
-    }, [firstLogin, http]);
-
-    const handleAddData = (data) => {
-        // Add your logic to add new data to the table
-        console.log(data);
-    }
     return (
         <Container maxWidth="lg">
-            {open && <PopupPin open={open} setOpen={setOpen} />}
-            {openAdd && <AddVault openAdd={openAdd} setOpenAdd={setOpenAdd} firstLogin={firstLogin} onAddData={handleAddData} />}
+            {openPin && <PopupPin openPin={openPin} setOpenPin={setOpenPin} data={handleFetch} />}
+            {openAdd && <AddVault openAdd={openAdd} setOpenAdd={setOpenAdd} firstLogin={firstLogin} data={handleAdd} />}
 
             <Grid container justifyContent="space-between" alignItems="center" mt={3} spacing={2}>
                 <Grid size={{ xs: 12, md: 6 }} textAlign={{ xs: 'center', md: 'left' }}>
@@ -85,7 +103,7 @@ export default function Vault() {
 
             <Divider sx={{ marginY: 2 }} />
 
-            {firstLogin ? (
+            {firstLogin || (vaultData.length == 0) ? (
                 <div style={{ textAlign: "center", marginTop: "50px" }}>
                     <Typography variant="h6">
                         No secure passwords available. Please add new records.
@@ -110,7 +128,7 @@ export default function Vault() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {data.map((item, index) => (
+                            {vaultData.map((item, index) => (
                                 <TableRow key={index}>
                                     <TableCell>{index + 1}</TableCell>
                                     <TableCell>{item.title}</TableCell>

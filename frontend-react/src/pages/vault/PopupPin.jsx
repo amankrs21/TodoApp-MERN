@@ -4,31 +4,22 @@ import {
     Dialog, DialogTitle, DialogContent, DialogContentText, TextField, DialogActions, Button
 } from '@mui/material';
 
-export default function PopupPin({ open, setOpen }) {
+export default function PopupPin({ openPin, setOpenPin, data }) {
     const [forget, setForget] = useState(false);
-
-    const handleChange = () => {
-        setOpen(!open);
-    }
-
-    const handleForgetPin = () => {
-        setForget(!forget);
-    }
-
 
     return (
         <Dialog
-            open={open}
-            onClose={handleChange}
+            open={openPin}
+            onClose={() => setOpenPin(!openPin)}
             PaperProps={{
                 component: 'form',
                 onSubmit: (event) => {
                     event.preventDefault();
                     const formData = new FormData(event.currentTarget);
                     const formJson = Object.fromEntries(formData.entries());
-                    const pin = formJson.pin;
-                    localStorage.setItem('SecurityPin', btoa(pin));
-                    handleChange();
+                    localStorage.setItem('SecurityPin', btoa(formJson.pin));
+                    data(btoa(formJson.pin));
+                    setOpenPin(!openPin);
                 },
             }}
         >
@@ -40,7 +31,7 @@ export default function PopupPin({ open, setOpen }) {
                         <br />
                         Do you want to continue?
                     </DialogContentText>
-                    <Button variant="text" mt={1} onClick={handleForgetPin}>
+                    <Button variant="text" mt={1} onClick={() => setForget(!forget)}>
                         Still remember your PIN?
                     </Button>
                 </DialogContent>
@@ -51,13 +42,13 @@ export default function PopupPin({ open, setOpen }) {
                     </DialogContentText>
                     <TextField autoFocus fullWidth required name="pin" variant="outlined"
                         label="Security PIN" type="password" />
-                    <Button variant="text" mt={1} onClick={handleForgetPin}>
+                    <Button variant="text" mt={1} onClick={() => setForget(!forget)}>
                         Forget your PIN?
                     </Button>
                 </DialogContent>
             )}
             <DialogActions>
-                <Button variant='outlined' onClick={handleChange}>Cancel</Button>
+                <Button variant='outlined' onClick={() => setOpenPin(!openPin)}>Cancel</Button>
                 <Button type="submit" variant='contained'>Submit</Button>
             </DialogActions>
         </Dialog>
@@ -65,6 +56,7 @@ export default function PopupPin({ open, setOpen }) {
 }
 
 PopupPin.propTypes = {
-    open: PropTypes.bool.isRequired,
-    setOpen: PropTypes.func.isRequired,
+    openPin: PropTypes.bool.isRequired,
+    setOpenPin: PropTypes.func.isRequired,
+    data: PropTypes.func.isRequired,
 };

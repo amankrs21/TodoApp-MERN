@@ -65,6 +65,15 @@ const addPassword = async (req, res) => {
         }
 
         const userID = await currentUserID(req, res);
+        const previousPassword = await UserVault.findOne({ createdBy: userID });
+        if (previousPassword) {
+            try {
+                decrypt(previousPassword.password, key);
+            } catch (error) {
+                console.error(error);
+                return res.status(400).json({ message: "Key is not able to decrypt the previous password!" });
+            }
+        }
         try {
             encryptedPassword = encrypt(rawPassword, key);
         } catch (error) {
