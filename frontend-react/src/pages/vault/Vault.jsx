@@ -46,10 +46,13 @@ export default function Vault() {
         }
     }, [firstLogin, http]);
 
+    const handleAddData = (data) => {
+        console.log(data);
+    }
     return (
         <Container maxWidth="lg">
             {open && <PopupPin open={open} setOpen={setOpen} />}
-            {openAdd && <AddVault openAdd={openAdd} setOpenAdd={setOpenAdd} firstLogin={firstLogin} />}
+            {openAdd && <AddVault openAdd={openAdd} setOpenAdd={setOpenAdd} firstLogin={firstLogin} onAddData={handleAddData} />}
 
             <Grid container justifyContent="space-between" alignItems="center" mt={3} spacing={2}>
                 <Grid size={{ xs: 12, md: 6 }} textAlign={{ xs: 'center', md: 'left' }}>

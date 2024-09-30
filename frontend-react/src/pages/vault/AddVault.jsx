@@ -5,7 +5,7 @@ import {
 import { toast } from 'react-toastify';
 import AuthUser from '../../components/AuthUser';
 
-export default function AddVault({ openAdd, setOpenAdd, firstLogin }) {
+export default function AddVault({ openAdd, setOpenAdd, firstLogin, onAddData }) {
     const { http } = AuthUser();
     const handleChange = () => {
         setOpenAdd(!openAdd);
@@ -22,6 +22,7 @@ export default function AddVault({ openAdd, setOpenAdd, firstLogin }) {
                     event.preventDefault();
                     const formData = new FormData(event.currentTarget);
                     const formJson = Object.fromEntries(formData.entries());
+                    onAddData(formJson);
                     if (localStorage.getItem('SecurityPin')) {
                         formJson.key = localStorage.getItem('SecurityPin');
                     } else {
@@ -74,4 +75,5 @@ AddVault.propTypes = {
     openAdd: PropTypes.bool.isRequired,
     setOpenAdd: PropTypes.func.isRequired,
     firstLogin: PropTypes.bool.isRequired,
+    onAddData: PropTypes.func.isRequired
 };
