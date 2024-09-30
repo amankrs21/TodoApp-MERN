@@ -5,7 +5,7 @@ import {
 import { toast } from 'react-toastify';
 import AuthUser from '../../components/AuthUser';
 
-export default function AddVault({ openAdd, setOpenAdd }) {
+export default function AddVault({ openAdd, setOpenAdd, firstLogin }) {
     const { http } = AuthUser();
     const handleChange = () => {
         setOpenAdd(!openAdd);
@@ -22,22 +22,25 @@ export default function AddVault({ openAdd, setOpenAdd }) {
                     event.preventDefault();
                     const formData = new FormData(event.currentTarget);
                     const formJson = Object.fromEntries(formData.entries());
-                    if (localStorage.getItem('SecurityPin') && localStorage.getItem('SecurityPin') !== formJson.key) {
-                        toast.error('Security Pin does not match!');
-                        return;
+                    if (localStorage.getItem('SecurityPin')) {
+                        formJson.key = localStorage.getItem('SecurityPin');
                     } else {
+                        formJson.key = btoa(formJson.key)
                         localStorage.setItem('SecurityPin', formJson.key);
-                        (async () => {
-                            try {
-                                const response = await http.post('/password/add', formJson);
-                                toast.success(response.data.message);
-                                handleChange();
-                            } catch (error) {
-                                toast.error('Something went wrong!');
-                                console.error(error);
-                            }
-                        })();
                     }
+                    (async () => {
+                        try {
+                            const response = await http.post('/password/add', formJson);
+                            toast.success(response.data.message);
+                            const authData = JSON.parse(localStorage.getItem('authData'));
+                            authData.user.firstLogin = false;
+                            localStorage.setItem('authData', JSON.stringify(authData));
+                            handleChange();
+                        } catch (error) {
+                            toast.error('Something went wrong!');
+                            console.error(error);
+                        }
+                    })();
                     handleChange();
                 },
             }}
@@ -46,6 +49,9 @@ export default function AddVault({ openAdd, setOpenAdd }) {
             <DialogContent>
                 <DialogContentText mb={2}>
                     Please fill the form to add a new password.
+                    {firstLogin && <b style={{ color: 'red' }}><br />
+                        Please note that the PIN will be used every where to encrypt and decrypt the password.
+                    </b>}
                 </DialogContentText>
                 <TextField autoFocus fullWidth required variant="outlined"
                     name="title" label="Title (Website Name)" />
@@ -53,8 +59,8 @@ export default function AddVault({ openAdd, setOpenAdd }) {
                     name="username" label="Username (optional)" />
                 <TextField autoFocus fullWidth required variant="outlined"
                     name="password" label="Password" />
-                <TextField fullWidth required variant="outlined" sx={{ marginTop: 2 }}
-                    name="key" label="PIN to encrypt Password" />
+                {firstLogin && <TextField fullWidth required variant="outlined" sx={{ marginTop: 2 }}
+                    name="key" label="PIN to encrypt Password" />}
             </DialogContent>
             <DialogActions>
                 <Button variant='outlined' onClick={handleChange}>Cancel</Button>
@@ -67,4 +73,5 @@ export default function AddVault({ openAdd, setOpenAdd }) {
 AddVault.propTypes = {
     openAdd: PropTypes.bool.isRequired,
     setOpenAdd: PropTypes.func.isRequired,
+    firstLogin: PropTypes.bool.isRequired,
 };

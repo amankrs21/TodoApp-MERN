@@ -25,7 +25,7 @@ export default function Vault() {
         }
         const pin = localStorage.getItem('SecurityPin');
 
-        if (!authData && !pin) {
+        if (!firstLogin && !pin) {
             setOpen(true);
         } else if (pin && !firstLogin) {
             (async () => {
@@ -49,7 +49,7 @@ export default function Vault() {
     return (
         <Container maxWidth="lg">
             {open && <PopupPin open={open} setOpen={setOpen} />}
-            {openAdd && <AddVault openAdd={openAdd} setOpenAdd={setOpenAdd} />}
+            {openAdd && <AddVault openAdd={openAdd} setOpenAdd={setOpenAdd} firstLogin={firstLogin} />}
 
             <Grid container justifyContent="space-between" alignItems="center" mt={3} spacing={2}>
                 <Grid size={{ xs: 12, md: 6 }} textAlign={{ xs: 'center', md: 'left' }}>

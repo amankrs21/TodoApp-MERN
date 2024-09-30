@@ -2,6 +2,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { toast } from 'react-toastify';
 import { useState, useEffect } from "react";
+import { Navigate } from "react-router-dom";
 
 // Axios instance with default configurations
 const http = axios.create({
@@ -19,10 +20,10 @@ http.interceptors.response.use(
     (response) => response,
     (error) => {
         if (!error.response && error.message === "Network Error") {
-            window.location = "/503";
+            <Navigate to="/503" />;
         } else if (error.response.status === 403 || error.response.status === 401) {
             localStorage.clear();
-            window.location = "/";
+            <Navigate to="/" />;
         }
         return Promise.reject(error);
     }
@@ -61,7 +62,7 @@ export default function AuthUser() {
                 const currentTime = Date.now() / 1000;
                 if (decodedToken.exp < currentTime) {
                     toast.warning("Session expired. Please log in again.");
-                    window.location = "/";
+                    <Navigate to="/" />;
                     localStorage.clear();
                     return false;
                 }
