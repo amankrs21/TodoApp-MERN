@@ -14,7 +14,7 @@ const verifyUser = async (req, res, next) => {
         try {
             const decoded = jwt.verify(token, SecretKey);
             const user = await Users.findById(decoded?.id);
-            if (!user || !['user', 'admin'].includes(user.role)) {
+            if (!user || ![0, 1].includes(user.role)) {
                 return res.status(401).json({ message: "Unauthorized" });
             }
             next();
