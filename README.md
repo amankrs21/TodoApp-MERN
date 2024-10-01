@@ -1,4 +1,4 @@
-# MERN Vault: Your Secure Organizer
+# TodoMERN Project
 
 The TodoMERN project leverages the power of the MERN stack (MongoDB, Express, React, Node.js) to provide a robust and secure platform for managing todo lists. It features JWT authentication for secure access and protected routes to ensure that only authenticated users can access certain functionalities.
 
